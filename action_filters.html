@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html style="overflow-x: hidden;">
+<head>
+    <base target="_top">
+    <style>
+        .parent 
+        {
+            display: grid;
+            grid-template-rows: 9vh 20vh 51vh 15vh;
+        }
+        #hello_user
+        {
+            margin-top: 2em;
+            margin-left: 1em;
+            font-size: 2.5em;
+            line-height: 42px;
+            color: #2D2ACD;
+        }
+        .textholder
+        {
+            border: 1px solid #000000;
+            box-sizing: border-box;
+        }
+        #bottom
+        {
+            position: relative;
+            display: flex;
+            flex-flow: column wrap;
+            align-items: center;   
+        }
+        p
+        {
+            text-align: left;
+            margin-block-end: 0;
+            margin-bottom: 0 !important;
+        }
+
+        /*BURGER*/
+
+        body{margin: 0;padding: 0;background: #232323;color: #cdcdcd;font-family: "Avenir Next", "Avenir", sans-serif}#menuToggle{display: block;position: relative;top: 25px;left: 25px;z-index: 1;-webkit-user-select: none;user-select: none}#menuToggle a{text-decoration: none;color: #232323;transition: color 0.3s ease}#menuToggle a:hover{color: tomato}#menuToggle input{display: block;width: 40px;height: 32px;position: absolute;top: -7px;left: -5px;cursor: pointer;opacity: 0;z-index: 2;-webkit-touch-callout: none}#menuToggle span{display: block;width: 33px;height: 4px;margin-bottom: 5px;position: relative;background: #ffffff;border-radius: 3px;z-index: 1;transform-origin: 4px 0px;transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),opacity 0.55s ease}#menuToggle span:first-child{transform-origin: 0% 0%}#menuToggle span:nth-last-child(2){transform-origin: 0% 100%}#menuToggle input:checked ~ span{opacity: 1;transform: rotate(45deg) translate(-2px, -1px);background: #232323}#menuToggle input:checked ~ span:nth-last-child(3){opacity: 0;transform: rotate(0deg) scale(0.2, 0.2)}#menuToggle input:checked ~ span:nth-last-child(2){transform: rotate(-45deg) translate(0, -1px)}#menu{position: absolute;width: 300px;margin: -100px 0 0 -25px;padding: 25px;padding-top: 125px;background: #ededed;list-style-type: none;-webkit-font-smoothing: antialiased;transform-origin: 0% 0%;transform: translate(-100%, 0);transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0)}#menu li{padding: 10px 0;font-size: 22px}#menuToggle input:checked ~ ul{transform: none}
+
+        /*BURGER*/
+
+    </style>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+    <!-- bootstrap -->
+    <meta charset="utf-8">
+
+</head>
+<body onload="on_load();">
+
+
+
+    <div id="page1" class="parent">
+
+
+        <!-- burger -->
+        <nav role="navigation" style="background: #6C69FF;">
+            <div id="menuToggle">
+                <input type="checkbox" />
+                <span></span>
+                <span></span>
+                <span></span>
+                <ul id="menu" style="height: 100vh;">
+                    <h2>Taskbee</h2>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="APISelector">API</label>
+                        </div>
+                        <select class="custom-select" id="APISelector" onchange="">
+                        </select>
+                    </div>
+                    <br>
+                    <a href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span><li>FAQ</li></a>
+                    <a href="#"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span><li>Give feedbacks</li></a>
+                    <a href="#"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span><li>Report an issue</li></a>
+                </ul>
+            </div>
+        </nav>
+        <!-- burger -->
+
+
+        <div id="top">
+            <p id="hello_user">Choose a data</p>
+            <p id="actualUser"></p>
+        </div>
+
+        <div id="middle">
+            <div class="input-group mb-3" style="padding: 30px;">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="mainSelector" id="mainSelectorLabel">Data</label>
+                </div>
+                <select class="custom-select" id="mainSelector" onchange="authSelect()">
+                </select>
+            </div>
+
+            <div id="filters">
+                <form id="filtersform" style="padding-left: 10px;">
+
+                </form>
+                <button type="button" id="addFilterButton" style="display: none !important; margin: 5px; opacity: 0.7 !important; border-radius: 100px !important;" class="btn btn-info btn-sm" onclick="addFilter();">+ add filter</button>
+            </div>
+
+
+        </div>
+        <div id="bottom">
+            <button type="button" class="btn btn-primary" onclick="startActions();">Confirm</button>
+        </div>
+            <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.switchpage(true, 2)">< back</button>
+    </div>
+</body>
+<script>
+
+    var selectedData;
+    var selectedAction;
+    var selectedAuth;
+    var filters = [];
+
+    function generateOptions(argument) {
+        console.log(argument);
+        if (argument[0].indexOf('data') >= 0) {
+        }
+        else if (argument[0].indexOf('actions') >= 0) {
+            selectedAction = argument[2][0];
+            document.getElementById('filters').style.display = "block"
+        }
+        else if (argument[0].indexOf('filter') >= 0) {
+        }
+        else if (argument[0].indexOf('auths') >= 0) {
+            selectedAuth = argument[2][0];
+        }
+        else return false;
+
+        for (var i = 0; i < argument[2].length; i++) {
+            createOpIn(argument[1], argument[2][i]);
+        }
+    }
+
+    function remfilter(i) {
+        document.getElementById('filtersform').removeChild(document.getElementById('filtersform').childNodes[i+1]);
+        filters.splice(i,1);
+        i+=1;
+        for (; i <= document.getElementById("filtersform").childElementCount; i++) {
+            document.getElementById('filter'+i+'row').id = 'filter'+ (i-1) +'row'
+            document.getElementById('filter'+i+'what').id = 'filter'+ (i-1) +'what'
+            document.getElementById('filter'+i+'whatselect').id = 'filter'+ (i-1) +'whatselect'
+            document.getElementById('filter'+i+'key').id = 'filter'+ (i-1) +'key'
+            document.getElementById('filter'+i+'keyselect').id = 'filter'+ (i-1) +'keyselect'
+            document.getElementById('filter'+i+'val').id = 'filter'+ (i-1) +'val'
+            document.getElementById('filter'+i+'valinput').id = 'filter'+ (i-1) +'valinput'
+            document.getElementById('filter'+i+'rem').id = 'filter'+ (i-1) +'rem'
+            document.getElementById('filter'+i+'rembtn').id = 'filter'+ (i-1) +'rembtn'
+        }
+    }
+
+    function modifyGlob(whom, i) {
+        var rep;
+        if(whom.indexOf('what') >= 0) 
+            rep = document.getElementById('filter'+i+'whatselect').options[document.getElementById('filter'+i+'whatselect').selectedIndex].text;
+        else if(whom.indexOf('key') >= 0) 
+            rep = document.getElementById('filter'+i+'keyselect').options[document.getElementById('filter'+i+'keyselect').selectedIndex].text;
+        else if(whom.indexOf('val') >= 0) 
+            rep = document.getElementById('filter'+i+'valinput').value;
+        else return false;
+        filters[i][whom] = rep;
+    }
+
+    function actionSelect() {
+        selectedAction = $( "#mainSelector option:selected" ).text();
+    }
+
+    function authSelect() {
+        selectedAuth = $( "#APISelector option:selected" ).text();
+    }
+
+
+    function addFilter() {
+        const filterindex = document.getElementById("filtersform").childElementCount;
+        filters.push({"what":"", "key":"", "val":""});
+        var formRow = document.createElement("div");
+        formRow.id = "filter" + filterindex + "row";
+        formRow.className = "form-row";
+        document.getElementById('filtersform').appendChild(formRow);
+
+
+        var what = document.createElement("div");
+        what.id = "filter" + filterindex + "what";
+        what.className = "col-3"
+        document.getElementById("filter" + filterindex + "row").appendChild(what);
+
+        var key = document.createElement("div");
+        key.id = "filter" + filterindex + "key";
+        key.className = "col-3"
+        document.getElementById("filter" + filterindex + "row").appendChild(key);
+
+        var val = document.createElement("div");
+        val.id = "filter" + filterindex + "val";
+        val.className = "col-4"
+        document.getElementById("filter" + filterindex + "row").appendChild(val);
+
+        var rem = document.createElement("div");
+        rem.id = "filter" + filterindex + "rem";
+        rem.className = "col-1"
+        document.getElementById("filter" + filterindex + "row").appendChild(rem);
+
+
+        var whatSelect = document.createElement("SELECT");
+        whatSelect.id = "filter" + filterindex + "whatselect";
+        whatSelect.className = "form-control";
+        whatSelect.onchange = function() {modifyGlob("what",filterindex)}
+        document.getElementById("filter" + filterindex + "what").appendChild(whatSelect);
+        google.script.run
+        .withSuccessHandler(generateOptions)
+        .getOptionsFromBack("filter", "filter" + filterindex + "whatselect")
+
+        var keySelect = document.createElement("SELECT");
+        keySelect.id = "filter" + filterindex + "keyselect";
+        keySelect.className = "form-control";
+        keySelect.onchange = function() {modifyGlob("key",filterindex)}
+        document.getElementById("filter" + filterindex + "key").appendChild(keySelect);
+        google.script.run
+        .withSuccessHandler(generateOptions)
+        .getOptionsFromBack("filter", "filter" + filterindex + "keyselect")
+
+        var valinput = document.createElement("INPUT");
+        valinput.id = "filter" + filterindex + "valinput";
+        valinput.className = "form-control";
+        valinput.onchange = function() {modifyGlob("val",filterindex)}
+        valinput.placeholder = "value";
+        valinput.type = "text";
+        document.getElementById("filter" + filterindex + "val").appendChild(valinput);
+
+        var rembtn = document.createElement("button");
+        rembtn.id = "filter" + filterindex + "rembtn";
+        rembtn.type = "button";
+        rembtn.onclick = function() {remfilter(filterindex);}
+        rembtn.className = "btn btn-secondary mb-1";
+        rembtn.innerHTML = "X";
+        document.getElementById("filter" + filterindex + "rem").appendChild(rembtn);
+
+    }
+
+    function createOpIn(identifier, name) {
+        var x = document.createElement("OPTION");
+        x.setAttribute("value", name);
+        var t = document.createTextNode(name);
+        x.appendChild(t);
+        document.getElementById(identifier).appendChild(x);
+    }
+
+    function clearBox(elementID) { 
+        var div = document.getElementById(elementID); 
+        while(div.firstChild) { 
+            div.removeChild(div.firstChild); 
+        } 
+    }
+
+    function send() {
+// console.log(selectedData + ' ' + selectedAction);
+// console.log(filters);
+google.script.run
+.sendReq(selectedData, selectedAction, filters, selectedAuth);
+
+
+}
+
+function isPOST(D) {
+  if (D == "invoice" || D == "credit_note") 
+  return true;
+  return false;
+}
+
+function startActions() {
+    selectedData = $( "#mainSelector option:selected" ).text();
+    clearBox('mainSelector');
+    clearBox('bottom');
+    document.getElementById('mainSelector').onchange = function(){actionSelect();}
+    document.getElementById('mainSelectorLabel').innerHTML = "Action";
+    document.getElementById('hello_user').innerHTML = "Choose<br>an action";
+    var button = document.createElement("button");
+    button.innerHTML = "Confirm";
+    button.className = "btn btn-primary";
+    button.onclick = function(){send();}
+    document.getElementById('bottom').appendChild(button);
+
+    google.script.run
+    .withSuccessHandler(generateOptions)
+    .getOptionsFromBack("actions"+selectedData, "mainSelector")
+    if(!isPOST(selectedData))
+    {
+        addFilter();
+        document.getElementById('addFilterButton').style.display = "inline-block";
+    }
+}
+
+function on_load() {
+    google.script.run
+    .withSuccessHandler(generateOptions)
+    .getOptionsFromBack("data", "mainSelector")
+    google.script.run
+    .withSuccessHandler(generateOptions)
+    .getOptionsFromBack("auths", "APISelector")
+}
+
+</script>
+</html>

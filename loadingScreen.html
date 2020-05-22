@@ -1,0 +1,114 @@
+<!-- Loading screen style. -->
+<style>
+  /* Make the loading page take the whole screen and hide everything. */
+  .loadingElement {
+    z-index: 1100;
+    position: fixed;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: block;
+  }
+
+  /* Text related to the loading page, with some tooltips. */
+  .loadingText {
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    font-size: large;
+    font-weight: bold;
+    color: rgba(91, 187, 78, 1);
+    width: 1000px;
+  }
+
+  /* Animations's transitions rules begin here. */
+  .loader,
+  .loader:before,
+  .loader:after {
+    background: rgb(91, 187, 78);
+    -webkit-animation: load1 1s infinite ease-in-out;
+    animation: load1 1s infinite ease-in-out;
+    width: 1em;
+    height: 4em;
+  }
+
+  .loader {
+    color: rgb(91, 187, 78);
+    text-indent: -9999em;
+    margin: 90px auto;
+    position: relative;
+    font-size: 11px;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+  }
+
+  .loader:before,
+  .loader:after {
+    position: absolute;
+    top: 0;
+    content: "";
+  }
+
+  .loader:before {
+    left: -1.5em;
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+  }
+
+  .loader:after {
+    left: 1.5em;
+  }
+
+  /* End of animations rules. */
+
+  /* Animations load for older browsers. */
+  @-webkit-keyframes load1 {
+    0%,
+    80%,
+    100% {
+      box-shadow: 0 0;
+      height: 4em;
+    }
+
+    40% {
+      box-shadow: 0 -2em;
+      height: 5em;
+    }
+  }
+
+  /* Animations load for new browsers */
+  @keyframes load1 {
+    0%,
+    80%,
+    100% {
+      box-shadow: 0 0;
+      height: 4em;
+    }
+
+    40% {
+      box-shadow: 0 -2em;
+      height: 5em;
+    }
+  }
+</style>
+
+<!-- Loading screen, shows up on every query launch, hidden by default. -->
+<div id="loadingWrapper" style="display: block;">
+  <div class="loadingElement">
+    <div class="loader"></div>
+    <div class="loadingText" style="font-size: 20px;">
+      Chargement des données ...
+    </div>
+    <br />
+    <div class="loadingText" style="font-size: 14px;">
+      (Cela peut prendre quelques minutes)
+    </div>
+  </div>
+</div>

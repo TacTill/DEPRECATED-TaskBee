@@ -1,0 +1,13 @@
+{
+  "timeZone": "Europe/Paris",
+  "dependencies": {
+    "libraries": [{
+      "userSymbol": "ORM",
+      "libraryId": "1Zsv1OeL0rd4xlibG8rQFNWWhr4DhPu8NJ0vO-aBa6FgkszZQvxAtud7-",
+      "version": "1",
+      "developmentMode": true
+    }]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <style>
+        .parent 
+        {
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+        }
+        .textholder
+        {
+            border: 1px solid #000000;
+            box-sizing: border-box;
+        }
+        #hello_user
+        {
+            margin-top: 25px;
+            font-size: 2.5em;
+            line-height: 42px;
+        }
+        #bottom
+        {
+            position: relative;
+            display: flex;
+            flex-flow: column wrap;
+            align-items: center;   
+        }
+        .form-control
+        {
+            width: 65% !important;
+            margin: auto !important;
+            margin-bottom: 10px auto !important;
+        }
+        p
+        {
+            text-align: center;
+        }
+    </style>
+    <!-- bootstrap -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+    <!-- bootstrap -->
+
+    <meta charset="utf-8">
+</head>
+<body onload="on_load();" style="margin: 0; font-family: Roboto; font-style: normal; font-size: 1.3em;">
+    <div id="page1" class="parent">
+
+        <div id="top">
+            <p id="hello_user">Welcome<br>to Taskbee</p>
+            <p id="actualUser"></p>
+            <br>
+        </div>
+
+
+        <div id="middle">
+            <div style="display:table">
+                <div id="statement" style="padding-left: 50px; opacity: 0.75; display:table-cell">
+                    Please, enter your<br>ChargeBee informations&nbsp; 
+                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                </div>
+            </div>
+            <br>
+            <label for="subdomain" style="margin-left: 50px;">Subdomain</label>
+            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="subdomain" placeholder="your subdomain here">
+            <br>
+            <label for="token" style="margin-left: 50px;">Token</label>
+            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="token" placeholder="your CB token here">
+
+        </div>
+
+        <div id="bottom">
+            <button type="button" style="margin: 20px; background-image: none; border-color: #6C69FF" id="validatebtn" class="btn btn-primary" onclick="validAuth()" disabled>Confirm</button>
+        </div>
+    </div>
+</body>
+<script>
+
+    function buttonAb() {
+        if (document.getElementById("token").value.length == 0 || 
+            document.getElementById("subdomain").value.length == 0)
+            document.getElementById("validatebtn").disabled = true;
+        else document.getElementById("validatebtn").disabled = false;
+    }
+
+    function on_load() {
+        google.script.run.withSuccessHandler(updateUser).getEmail();
+    }
+
+    function updateUser(email){
+        document.getElementById("actualUser").innerHTML = email.substring(0, email.indexOf('@'));    
+    }
+
+    function good(argument) {
+        google.script.run.showSidebar();
+    }
+
+    function bad(argument) {
+        if (argument == 1) document.getElementById('subdomain').style.background = "#FFCCCB";
+        if (argument == 2) document.getElementById('token').style.background = "#FFCCCB";
+        if (argument == 3) {
+            document.getElementById('subdomain').style.background = "#FFCCCB"; 
+            document.getElementById('token').style.background = "#FFCCCB";
+        }
+    }
+
+    function validAuth() {
+        google.script.run.withFailureHandler(bad)
+        .withSuccessHandler(good)
+        .storeAuth(document.getElementById("token").value, document.getElementById("subdomain").value);
+    }
+
+</script>
+</html>
