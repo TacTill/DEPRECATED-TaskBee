@@ -44,12 +44,22 @@
     </style>
 
     <!-- bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+<!-- Bootstrap core CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet">
+<!-- JQuery -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
     <!-- bootstrap -->
     <meta charset="utf-8">
 
@@ -70,17 +80,12 @@
                 <span></span>
                 <ul id="menu" style="height: 100vh;">
                     <h2>Taskbee</h2>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="APISelector">API</label>
-                        </div>
-                        <select class="custom-select" id="APISelector" onchange="">
-                        </select>
-                    </div>
                     <br>
-                    <a href="#"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span><li>FAQ</li></a>
-                    <a href="#"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span><li>Give feedbacks</li></a>
-                    <a href="#"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span><li>Report an issue</li></a>
+                    <h4 id="APISelector"></h4>
+                    <br>
+                    <a href="#"><li>FAQ</li></a>
+                    <a href="#"><li>Give feedbacks</li></a>
+                    <a href="#"><li>Report an issue</li></a>
                 </ul>
             </div>
         </nav>
@@ -97,7 +102,7 @@
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="mainSelector" id="mainSelectorLabel">Data</label>
                 </div>
-                <select class="custom-select" id="mainSelector" onchange="authSelect()">
+                <select class="custom-select" id="mainSelector">
                 </select>
             </div>
 
@@ -111,9 +116,9 @@
 
         </div>
         <div id="bottom">
-            <button type="button" class="btn btn-primary" onclick="startActions();">Confirm</button>
+            <button type="button" class="btn btn-primary" onclick="startActions();" id="confbtn" disabled>Confirm</button>
         </div>
-            <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.switchpage(true, 2)">< back</button>
+        <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.switchpage(true, 2)">< back</button>
     </div>
 </body>
 <script>
@@ -123,18 +128,24 @@
     var selectedAuth;
     var filters = [];
 
+    // fills the selector given in argument[1] with the type arg[0] and the options from arg[2]
+    // called by the server on success of a select creation 
     function generateOptions(argument) {
         console.log(argument);
         if (argument[0].indexOf('data') >= 0) {
+            document.getElementById("confbtn").disabled = false;
         }
         else if (argument[0].indexOf('actions') >= 0) {
             selectedAction = argument[2][0];
             document.getElementById('filters').style.display = "block"
+            document.getElementById("confbtn").disabled = false;
         }
         else if (argument[0].indexOf('filter') >= 0) {
         }
         else if (argument[0].indexOf('auths') >= 0) {
-            selectedAuth = argument[2][0];
+            selectedAuth = argument[2];
+            document.getElementById('APISelector').innerHTML = selectedAuth;
+            return true;
         }
         else return false;
 
@@ -143,6 +154,8 @@
         }
     }
 
+    // this function removes a filter indexed in arg(i) from "filtersform"
+    // it is attached to every rembutton with the index of its row in it
     function remfilter(i) {
         document.getElementById('filtersform').removeChild(document.getElementById('filtersform').childNodes[i+1]);
         filters.splice(i,1);
@@ -160,6 +173,7 @@
         }
     }
 
+    // this function updates the filter's global 
     function modifyGlob(whom, i) {
         var rep;
         if(whom.indexOf('what') >= 0) 
@@ -172,6 +186,7 @@
         filters[i][whom] = rep;
     }
 
+    // these functions update the global corresponding to their selects
     function actionSelect() {
         selectedAction = $( "#mainSelector option:selected" ).text();
     }
@@ -181,15 +196,18 @@
     }
 
 
+    // this function creates a filter in the "filtersform" div when called
+    // a trigger is placed on the "+ add filter" button
     function addFilter() {
         const filterindex = document.getElementById("filtersform").childElementCount;
         filters.push({"what":"", "key":"", "val":""});
+        // create row
         var formRow = document.createElement("div");
         formRow.id = "filter" + filterindex + "row";
         formRow.className = "form-row";
         document.getElementById('filtersform').appendChild(formRow);
 
-
+        // create 4 blocks in the row
         var what = document.createElement("div");
         what.id = "filter" + filterindex + "what";
         what.className = "col-3"
@@ -211,6 +229,7 @@
         document.getElementById("filter" + filterindex + "row").appendChild(rem);
 
 
+        // create 2 select and puts them in the first 2 blocks
         var whatSelect = document.createElement("SELECT");
         whatSelect.id = "filter" + filterindex + "whatselect";
         whatSelect.className = "form-control";
@@ -229,6 +248,7 @@
         .withSuccessHandler(generateOptions)
         .getOptionsFromBack("filter", "filter" + filterindex + "keyselect")
 
+        // create an input and puts it in the 3rd block
         var valinput = document.createElement("INPUT");
         valinput.id = "filter" + filterindex + "valinput";
         valinput.className = "form-control";
@@ -237,6 +257,7 @@
         valinput.type = "text";
         document.getElementById("filter" + filterindex + "val").appendChild(valinput);
 
+        // create a button and puts it in the last block
         var rembtn = document.createElement("button");
         rembtn.id = "filter" + filterindex + "rembtn";
         rembtn.type = "button";
@@ -244,9 +265,9 @@
         rembtn.className = "btn btn-secondary mb-1";
         rembtn.innerHTML = "X";
         document.getElementById("filter" + filterindex + "rem").appendChild(rembtn);
-
     }
 
+    // adds an option of name  "name" to a selector of id "identifier"
     function createOpIn(identifier, name) {
         var x = document.createElement("OPTION");
         x.setAttribute("value", name);
@@ -255,6 +276,7 @@
         document.getElementById(identifier).appendChild(x);
     }
 
+    // clears a div
     function clearBox(elementID) { 
         var div = document.getElementById(elementID); 
         while(div.firstChild) { 
@@ -262,52 +284,59 @@
         } 
     }
 
+    // submit infos to make the api call(s) to the server
     function send() {
-// console.log(selectedData + ' ' + selectedAction);
-// console.log(filters);
-google.script.run
-.sendReq(selectedData, selectedAction, filters, selectedAuth);
-
-
-}
-
-function isPOST(D) {
-  if (D == "invoice" || D == "credit_note") 
-  return true;
-  return false;
-}
-
-function startActions() {
-    selectedData = $( "#mainSelector option:selected" ).text();
-    clearBox('mainSelector');
-    clearBox('bottom');
-    document.getElementById('mainSelector').onchange = function(){actionSelect();}
-    document.getElementById('mainSelectorLabel').innerHTML = "Action";
-    document.getElementById('hello_user').innerHTML = "Choose<br>an action";
-    var button = document.createElement("button");
-    button.innerHTML = "Confirm";
-    button.className = "btn btn-primary";
-    button.onclick = function(){send();}
-    document.getElementById('bottom').appendChild(button);
-
-    google.script.run
-    .withSuccessHandler(generateOptions)
-    .getOptionsFromBack("actions"+selectedData, "mainSelector")
-    if(!isPOST(selectedData))
-    {
-        addFilter();
-        document.getElementById('addFilterButton').style.display = "inline-block";
+        // console.log(selectedData + ' ' + selectedAction);
+        // console.log(filters);
+        console.log(selectedData, selectedAction, filters, selectedAuth);
+        google.script.run
+        .sendReq(selectedData, selectedAction, filters, selectedAuth);
     }
-}
 
-function on_load() {
-    google.script.run
-    .withSuccessHandler(generateOptions)
-    .getOptionsFromBack("data", "mainSelector")
-    google.script.run
-    .withSuccessHandler(generateOptions)
-    .getOptionsFromBack("auths", "APISelector")
-}
+    // checks if the request is a post or a get
+    function isPOST(D) {
+        if (D == "invoice" 
+            || D == "credit_note" 
+            || D == "credit_note") 
+            return true;
+        return false;
+    }
+
+    //changes the display to action selection, called after the data you'll play with is selected
+    function startActions() {
+        selectedData = $( "#mainSelector option:selected" ).text();
+        clearBox('mainSelector');
+        clearBox('bottom');
+        document.getElementById('mainSelector').onchange = function(){actionSelect();}
+        document.getElementById('mainSelectorLabel').innerHTML = "Action";
+        document.getElementById('hello_user').innerHTML = "Choose<br>an action";
+        var button = document.createElement("button");
+        button.innerHTML = "Confirm";
+        button.className = "btn btn-primary";
+        button.disabled = true;
+        button.id = 'confbtn';
+        button.onclick = function(){send();}
+        document.getElementById('bottom').appendChild(button);
+
+        google.script.run
+        .withSuccessHandler(generateOptions)
+        .getOptionsFromBack("actions"+selectedData, "mainSelector")
+        if(!isPOST(selectedData))
+        {
+            addFilter();
+            document.getElementById('addFilterButton').style.display = "inline-block";
+        }
+    }
+
+    // onload function triggers at the opening of this vue
+    function on_load() {
+        google.script.run
+        .withSuccessHandler(generateOptions)
+        .getOptionsFromBack("data", "mainSelector")
+        google.script.run
+        .withSuccessHandler(generateOptions)
+        .getOptionsFromBack("auths", "APISelector")
+    }
 
 </script>
 </html>

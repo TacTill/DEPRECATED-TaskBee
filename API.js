@@ -11,8 +11,8 @@ function CHARGEBEE_API() {
   return {
     AUTH: function (spreadsheet = SpreadsheetApp.getActive()) {
     const authSheet = spreadsheet.getSheetByName('SYS_auth') 
-    || ORM.writeObjectsOnSheet (spreadsheet.insertSheet('SYS_auth')) ([_BASIC_AUTH('CHARGEBE')]) ()
-    return ORM.readObjectsFromSheet(authSheet)[0] 
+    || writeObjectsOnSheet (spreadsheet.insertSheet('SYS_auth')) ([_BASIC_AUTH('CHARGEBE')]) ()
+    return readObjectsFromSheet(authSheet)[0] 
   },
     TEST_AUTH: function (credentials = CHARGEBEE_API().AUTH()) {
       return CHARGEBEE_API().GET(credentials)('invoice')('limit=1')(true).length > 0
@@ -70,6 +70,7 @@ function CHARGEBEE_API() {
                 /* if it does, we access the object before writing it */
                 const url    = 'https://'+credential.api_endpoint+object.object+'s'
                 + (exists ? "/"+object.id+"/"+( action || "") : "")
+                console.log("url", url);
                 const header = _getChargebeeHeader("POST") (credential) (object) ()
                 /* If an object attribute can't be updated, Chargebee throw an error. We delete the faulty attribute then try to repost the object */
                 do{

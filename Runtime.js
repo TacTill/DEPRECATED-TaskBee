@@ -14,8 +14,12 @@ function RUNTIME(process){
     (process.params) ()
     
     // TODO : Factoriser à partir d'ici
-    
+    console.log(process)
+    console.log(process.funct)
     const inputs = _binaryFilterArray(process.validate.input) (readObjectsFromSheet(getProcessSheet (process) ("INPUT")))
+    console.log(inputs);
+    console.log(inputs.yes.map(process.funct(process)));
+    
     const outputs = inputs.yes.length > 0 ? 
       _binaryFilterArray ((e) => !e.step) (inputs.yes.map(process.funct(process)))
     : {yes:[],no:[]}
