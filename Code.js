@@ -57,7 +57,7 @@ function isRequestWithCredentialsWorking(credentialsToTest) {
 
 function switchpage(newone) {
   const name = 
-  newone == 1 ? "index" : 
+  newone == 1 ? "auth" : 
   newone == 2 ? "action_filters" :
   newone == 3 ? "loadingScreen" : 
   newone == 4 ? "result" : 
