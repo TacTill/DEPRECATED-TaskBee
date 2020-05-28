@@ -20,7 +20,7 @@ function RUNTREE(int) {
             : {id: e.INVOICE_id, step:'filter',  log:'Invalid for payment collection'} 
           },
         },
-        // apply_existing_credits: { // retour non error mais rien ne se produit
+        // apply_existing_credits: { // retour non error but nothing happens
         //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_credit),
         //   uiLabel: int('invoice_apply_existing_credits'),
         //   params : [{INVOICE_id: ''}],
@@ -42,7 +42,7 @@ function RUNTREE(int) {
         //     : {id: elem.INVOICE_id, log:'Invalid for credit application'} 
         //   },
         // },
-        // apply_new_credits: { // retour non error mais rien ne se produit
+        // apply_new_credits: { // retour non error but nothing happens
         //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_credit),
         //   uiLabel: int('invoice_apply_new_credits'),
         //   params : [{INVOICE_id: '',CREDIT_amount:''}], 
@@ -60,9 +60,6 @@ function RUNTREE(int) {
         //   },
         // },
 
-
-
-
         stop_dunning_for_invoice: { /*marche awee*/
           RUN    : () => RUNTIME(RUNTREE(int).invoice.process.stop_dunning_for_invoice),
           uiLabel: int('stop_dunning_for_invoice'),
@@ -79,10 +76,9 @@ function RUNTREE(int) {
             return cbInvoice 
             && cbInvoice.id.length > 0 
             ? CHARGEBEE_API().POST()(cbInvoice)('stop_dunning') 
-            : {id: elem.INVOICE_id, log:'Invalid for invoice dunning stop'} 
+            : {id: elem.INVOICE_id, step:'filter', log:'Invalid for invoice dunning stop'} 
           },
         },
-
 
         apply_payment: { /* marcheeeee */
           RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_payment),
@@ -100,29 +96,27 @@ function RUNTREE(int) {
             return cbInvoice 
             && cbInvoice.id.length > 0 
             ? CHARGEBEE_API().POST()(cbInvoice)('apply_payments') 
-            : {id: elem.INVOICE_id, log:'Invalid for invoice payment applyance'} 
+            : {id: elem.INVOICE_id, step:'filter',log:'Invalid for invoice payment applyance'} 
           },
         },
 
-        // retrieve_as_pdf: {   /*[TypeError: Cannot read property 'step' of undefined]*/
-        //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.retrieve_as_pdf),
-        //   uiLabel: int('retrieve_as_pdf'),
-        //   params : [{INVOICE_id: 'required', DISPOSITION_type: 'inline'}],
-        //   validate : {
-        //     input   : (e) => e.INVOICE_id,
-        //     distant : (e) => e,
-        //     output  : (e) => e.download,
-        //   },
-        //   funct  : (process) => (elem) => {
-        //     const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-        //     || {id: INVOICE_id, object: 'invoice', disposition_type: DISPOSITION_type}
+        retrieve_as_pdf: {  
+          RUN    : () => RUNTIME(RUNTREE(int).invoice.process.retrieve_as_pdf),
+          uiLabel: int('retrieve_as_pdf'),
+          params : [{INVOICE_id: 'required', DISPOSITION_type: 'inline'}],
+          validate : {
+            input   : (e) => e.INVOICE_id,
+            distant : (e) => true,
+            output  : (e) => true,
+          },
+          funct  : (process) => (elem) => {
+            const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', disposition_type: elem.DISPOSITION_type,  step:'jesaipa'}
 
-        //     return cbInvoice 
-        //     && cbInvoice.id.length > 0 
-        //     ? CHARGEBEE_API().POST()(cbInvoice)('pdf') 
-        //     : {id: elem.INVOICE_id, log:'Invalid for invoice retrieve as pdf'} 
-        //   },
-        // },
+            return cbInvoice 
+            ? CHARGEBEE_API().POST()(cbInvoice)('pdf') 
+            : {id: elem.INVOICE_id, step:'jesaipa' , log:'Invalid for invoice retrieve as pdf'} 
+          },
+        },
 
         // add_charge_to_pending: {  /*Invoice in Pending state is only supported to add line item or Collect Invoice*/
         //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.add_charge_to_pending),
@@ -184,8 +178,7 @@ function RUNTREE(int) {
         //     output  : (e) => true,
         //   },
         //   funct  : (process) => (elem) => {
-        //     const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-        //     || {id: INVOICE_id, object: 'invoice', "transaction[payment_method]": "cash"}
+        //     const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', 'transaction[payment_method]' : elem.TRANSACTION_type}
 
         //     return cbInvoice 
         //     && cbInvoice.id.length > 0 
@@ -210,7 +203,7 @@ function RUNTREE(int) {
             return cbInvoice 
             && cbInvoice.id.length > 0 
             ? CHARGEBEE_API().POST()(cbInvoice)('refund') 
-            : {id: elem.INVOICE_id, log:'Invalid for invoice refund'} 
+            : {id: elem.INVOICE_id, step:'filter', log:'Invalid for invoice refund'} 
           },
         },
 
@@ -275,10 +268,9 @@ function RUNTREE(int) {
             const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
             || {id: INVOICE_id, object: 'invoice'}
 
-            return cbInvoice 
-            && cbInvoice.id.length > 0 
+            return cbInvoice && cbInvoice.id.length > 0 
             ? CHARGEBEE_API().POST()(cbInvoice)('void') 
-            : {id: elem.INVOICE_id, log:'Invalid for invoice void'} 
+            : {id: elem.INVOICE_id, step:'filter', log:'Invalid for invoice void'} 
           },
         },
 
@@ -298,13 +290,13 @@ function RUNTREE(int) {
             return cbInvoice 
             && cbInvoice.id.length > 0 
             ? CHARGEBEE_API().POST()(cbInvoice)('write_off') 
-            : {id: elem.INVOICE_id, log:'Invalid for invoice write off'} 
+            : {id: elem.INVOICE_id, step:'filter', log:'Invalid for invoice write off'} 
           },
         },
 
-        delete: { // marche et supprime uniquement les !PAID
-          RUN    : () => RUNTIME(RUNTREE(int).invoice.process.delete),
-          uiLabel: int('delete'),
+        del: { // marche et supprime uniquement les !PAID
+          RUN    : () => RUNTIME(RUNTREE(int).invoice.process.del),
+          uiLabel: int('del'),
           params : [{INVOICE_id: ''}],
           validate : {
             input   : (e) => e.INVOICE_id,
@@ -318,10 +310,28 @@ function RUNTREE(int) {
             return cbInvoice 
             && cbInvoice.id.length > 0 
             ? CHARGEBEE_API().POST()(cbInvoice)('delete') 
-            : {id: elem.INVOICE_id, log:'Invalid for invoice deletion'} 
+            : {id: elem.INVOICE_id,step:'filter', log:'Invalid for invoice deletion'} 
           },
         },
+        // create_invoice: {  //'Atleast one non recurring addon or charge item should be present'
+        //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice),
+        //   uiLabel: int('invoice_create_new'),
+        //   params : [{CUSTOMER_id: 'REQUIRED', }], 
+        //   validate : {
+        //     input   : (e) => e.CUSTOMER_id,
+        //     distant : (e) => e,
+        //     output  : (e) => true,
+        //   },          
+        //   funct  : (process) => (elem) => {
+        //     const cbCustomer = {customer_id: elem.CUSTOMER_id, object: 'invoices'}
 
+        //     return cbCustomer 
+        //     ? CHARGEBEE_API().POST_NO_TARGET()(cbCustomer)() 
+        //     : {id: elem.CUSTOMER_id, log:'Invalid for invoice creation'} 
+        //   },
+        // },
+
+    }
         // update: { // override 
         //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.update),
         //   uiLabel: int('update'),
@@ -340,20 +350,6 @@ function RUNTREE(int) {
 /////////////////////////////
 
     
-        // create_invoice: { api caller a modifier
-        //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice),
-        //   uiLabel: int('invoice_create_new'),
-        //   params : [{CUSTOMER_id: ''}], 
-        //   funct  : (process) => (elem) => {
-        //     const cbCustomer = CHARGEBEE_API().GET()('customer')('id[is]='+elem.CUSTOMER_id)()[0]
-        //     || {customer_id: elem.CUSTOMER_id, object: 'invoice'}
-
-        //     return cbCustomer 
-        //     && cbCustomer.id.length > 0 
-        //     ? CHARGEBEE_API().POST()(cbCustomer)() 
-        //     : {id: elem.CUSTOMER_id, log:'Invalid for invoice creation'} 
-        //   },
-        // },
 
         // import_invoice: {
         //   RUN    : () => RUNTIME(RUNTREE(int).invoice.process.import_invoice),
@@ -410,21 +406,42 @@ function RUNTREE(int) {
 
 
 
-      }
-    },
-    credit_note: {
-      uiLabel: int('credit'),
-      process : {
-        create: {
-          RUN: () => RUNTIME(RUNTREE(int).credit_note.process.create),
-          uiLabel: int('credit_create'),
-          params: [{CREDIT_id:'', CREDIT_amount:'', CREDIT_type:'',}], 
-          funct: (process) => (elem) => { return true },
+          
+        },
+        credit_note: {
+          uiLabel: int('credit'),
+          process : {
+            create: {
+              RUN: () => RUNTIME(RUNTREE(int).credit_note.process.create),
+              uiLabel: int('credit_create'),
+              params: [{CREDIT_id:'', CREDIT_amount:'', CREDIT_type:'',}], 
+              funct: (process) => (elem) => { return true },
+            }
+          }
+        },
+        promotional_credits: {
+            uiLabel: int('promotional_credits'),
+            process : {
+                add: { // marche
+                    RUN      : () => RUNTIME(RUNTREE(int).promotional_credits.process.add),
+                    uiLabel  : int('promotional_credits'),
+                    params   : [{CUSTOMER_id: 'REQUIRED', AMOUNT: "1", DESCRIPTION: Session.getActiveUser().getEmail() + ': added a credit'}],
+                    validate : {
+                        input   : (e) => e.CUSTOMER_id,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {customer_id: elem.CUSTOMER_id, amount: (elem.AMOUNT*100).toString(), description: elem.DESCRIPTION, object: 'promotional_credits'}
+                        return callObj 
+                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)('/add') 
+                        : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for promotional_credits addition'} 
+                    }
+                }
+            }
         }
-      }
     }
-  }
-}  
+    }
 
 
 function EN_txt (field) {

@@ -118,7 +118,7 @@
         <div id="bottom">
             <button type="button" class="btn btn-primary" onclick="startActions();" id="confbtn" disabled>Confirm</button>
         </div>
-        <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.switchpage(true, 2)">< back</button>
+        <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.switchpage(2)">< back</button>
     </div>
 </body>
 <script>
@@ -131,7 +131,6 @@
     // fills the selector given in argument[1] with the type arg[0] and the options from arg[2]
     // called by the server on success of a select creation 
     function generateOptions(argument) {
-        console.log(argument);
         if (argument[0].indexOf('data') >= 0) {
             document.getElementById("confbtn").disabled = false;
         }
@@ -286,9 +285,6 @@
 
     // submit infos to make the api call(s) to the server
     function send() {
-        // console.log(selectedData + ' ' + selectedAction);
-        // console.log(filters);
-        console.log(selectedData, selectedAction, filters, selectedAuth);
         google.script.run
         .sendReq(selectedData, selectedAction, filters, selectedAuth);
     }
@@ -297,7 +293,7 @@
     function isPOST(D) {
         if (D == "invoice" 
             || D == "credit_note" 
-            || D == "credit_note") 
+            || D == "promotional_credits") 
             return true;
         return false;
     }

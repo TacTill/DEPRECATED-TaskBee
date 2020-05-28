@@ -25,14 +25,14 @@ function storeAuth(sub, token) {
 }
 
 function isPOST(D) {
-  if (D == "invoice" || D == "credit_note") 
+  if (D == "invoice" || D == "credit_note" || D == "promotional_credits") 
     return true;
   return false;
 }
 
 function sendReq(selectedData, selectedAction, filters, auth) {
   switchpage(3);
-  console.log(selectedData, selectedAction, filters, auth)
+  console.log('+'+selectedData+'+'+selectedAction+'+')
   if (isPOST(selectedData))
   {
     try {const resultpost = CONTROLLER().run (selectedData) (selectedAction); console.log(resultpost); switchpage(4); return true}

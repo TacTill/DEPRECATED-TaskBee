@@ -71,27 +71,57 @@ function CHARGEBEE_API() {
                 const url    = 'https://'+credential.api_endpoint+object.object+'s'
                 + (exists ? "/"+object.id+"/"+( action || "") : "")
                 console.log("url", url);
+                console.log("object", object);
                 const header = _getChargebeeHeader("POST") (credential) (object) ()
                 /* If an object attribute can't be updated, Chargebee throw an error. We delete the faulty attribute then try to repost the object */
                 do{
                   var  response = JSON.parse(UrlFetchApp.fetch(url, header).getContentText())
+                  console.log("response", response);
                   delete object[response.param || null]
-                }while(!response.list && 
+                }while(!response[object.object] && 
                        (response.error_code === "param_should_not_be_sent" || response.error_code === "param_should_not_be_blank") );
                 /* The updated object is returned or null if tthe API doesn't return an object */
                 const result = {}
                 
                 
-                return !response.error_code ? response[object.object]
+                return !response.error_code ? response
                 : SHEET_LOG({type:'error',origin:"CHARGEBEE_API>POST", body:response})
                 ({step: 'post_error', log: response.message, ...object})
               } catch(e) {
-                console.log(e);
+                console.error(e);
               }
             }
           }
         },
-}
+        POST_NO_TARGET:  function (credential = CHARGEBEE_API().AUTH()) {
+          return  function (object) {
+            return  function (action) {
+              try{
+                const url    = 'https://'+credential.api_endpoint+object.object+(action||"");
+                console.log("url", url);
+                console.log("object", object);
+                const header = _getChargebeeHeader("POST") (credential) (object) ()
+                /* If an object attribute can't be updated, Chargebee throw an error. We delete the faulty attribute then try to repost the object */
+                do{
+                  var  response = JSON.parse(UrlFetchApp.fetch(url, header).getContentText())
+                  console.log(response);
+                  delete object[response.param || null]
+                }while(!response[object.object] && 
+                       (response.error_code === "param_should_not_be_sent" || response.error_code === "param_should_not_be_blank") );
+                /* The updated object is returned or null if tthe API doesn't return an object */
+                const result = {}
+                
+                
+                return !response.error_code ? response
+                : SHEET_LOG({type:'error',origin:"CHARGEBEE_API>POST", body:response})
+                ({step: 'post_error', log: response.message, ...object})
+              } catch(e) {
+                console.error(e);
+              }
+            }
+          }
+        },
+    }
 }
 
 /** 
