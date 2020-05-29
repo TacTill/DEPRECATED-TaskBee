@@ -16,6 +16,7 @@ Google Sheets Chargebee add-on created to highly improve productivity and the Ch
 ![Example screenshot](./img/screenshot.png)
 
 ## Technologies
+* Made with ♥ by Tactill using Javascript for the back-end and css3+Bootstrap+html5 for the front-end, async free (for the moment) and mostly functionnal, making the request via `UrlFetchApp.fetchUrlFetchApp.fetch`
 
 ## Setup 
 * Install the add-on on G Suite Marketplace 
@@ -28,9 +29,6 @@ Google Sheets Chargebee add-on created to highly improve productivity and the Ch
 * Collect and data and convert them into smart actions directly linked to Chargebee 
 
 * Run mass actions 
-
-## Code examples
-`put-your-code-here`
 
 ## Status 
 Project is almost finished, it miss some design details. 
