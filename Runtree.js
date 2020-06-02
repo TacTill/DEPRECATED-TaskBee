@@ -160,10 +160,11 @@ function RUNTREE(int) {
 
                 },
 
-                create_invoice: { 
+                create_invoice: { // split items by a ';' so you can have more than one
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice),
                     uiLabel: int('invoice_create_new'),
-                    params : [{CUSTOMER_id: 'REQUIRED', ADDON_id: '', ADDON_quantity: '', CHARGE_amount: '', CHARGE_description: ''}], 
+                    params : [{CUSTOMER_id: 'REQUIRED', 
+                    ADDON_id: '', ADDON_quantity: '', CHARGE_amount: '', CHARGE_description: ''}], 
                     validate : {
                         input   : (e) => e.CUSTOMER_id,
                         distant : (e) => e,
@@ -172,10 +173,18 @@ function RUNTREE(int) {
                     funct  : (process) => (elem) => {
 
                         const cbCustomer = {customer_id: elem.CUSTOMER_id, object: 'invoices'}
-
-
-                        // 'addons[id][0]': elem.ADDON_id, 'addons[quantity][0]' : elem.ADDON_quantity,
-                        // 'charges[amount][0]' : elem.CHARGE_amount, 'charges[description][0]' : elem.CHARGE_description
+                        sai = elem.ADDON_id ? elem.ADDON_id.split(';'): '';
+                        saq = elem.ADDON_quantity ? elem.ADDON_quantity.split(';'): '';
+                        sca = elem.CHARGE_amount ? elem.CHARGE_amount.split(';'): '';
+                        scd = elem.CHARGE_description ? elem.CHARGE_description.split(';'): '';
+                        for (var i = 0; i < sai.length && i < saq.length; i++) {
+                            cbCustomer['addons[id]['+i+']'] = sai[i];
+                            cbCustomer['addons[quantity]['+i+']'] = saq[i];
+                        }
+                        for (var i = 0; i < sca.length && i < scd.length; i++) {
+                            cbCustomer['charges[amount]['+i+']'] = sca[i];
+                            cbCustomer['charges[description]['+i+']'] = scd[i];
+                        }
 
                         return cbCustomer 
                         ? CHARGEBEE_API().POST_NO_TARGET()(cbCustomer)() 
