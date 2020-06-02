@@ -97,10 +97,18 @@ function CHARGEBEE_API() {
           return  function (object) {
             return  function (action) {
               try{
-                const url    = 'https://'+credential.api_endpoint+object.object+(action||"");
+                var urlencoded = "?";
+                for (let [key, value] of Object.entries(object)) {
+                  if (value !== undefined && value && value != '') {
+                    urlencoded = urlencoded.concat(key + '=' + value + '&');
+                  }
+                }
+                if (urlencoded[urlencoded.length -1] == '&') urlencoded.slice(0, urlencoded.length-1);
+
+                const url    = 'https://'+credential.api_endpoint+object.object+(action||"")+(urlencoded||"");
                 console.log("url", url);
                 console.log("object", object);
-                const header = _getChargebeeHeader("POST") (credential) (object) ()
+                const header = _getChargebeeHeader("POST") (credential) (urlencoded) ()
                 /* If an object attribute can't be updated, Chargebee throw an error. We delete the faulty attribute then try to repost the object */
                 do{
                   var  response = JSON.parse(UrlFetchApp.fetch(url, header).getContentText())
@@ -145,6 +153,7 @@ function _getChargebeeHeader (method = 'GET') {
             "Authorization" : "Basic "
             + Utilities.base64Encode(credential.api_user + ':' + credential.api_token || ''),
           },
+          "Content-Type" : "application/x-www-form-urlencoded",
           "payload": payload    
         }
       }

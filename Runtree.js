@@ -157,6 +157,25 @@ function RUNTREE(int) {
                         ? CHARGEBEE_API().POST()(cbInvoice)('delete') 
                         : {id: elem.INVOICE_id,step:'filter', log:'Invalid for invoice deletion'} 
                     },
+
+                },
+                create_invoice: {  //'Atleast one non recurring addon or charge item should be present'
+                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice),
+                    uiLabel: int('invoice_create_new'),
+                    params : [{CUSTOMER_id: 'REQUIRED', ADDON_id: '', ADDON_quantity: ''}], 
+                    validate : {
+                        input   : (e) => e.CUSTOMER_id,
+                        distant : (e) => e,
+                        output  : (e) => true,
+                    },          
+                    funct  : (process) => (elem) => {
+                        const cbCustomer = {customer_id: elem.CUSTOMER_id, object: 'invoices',
+                        'addons[id][0]': elem.ADDON_id, 'addons[quantity][0]' : elem.ADDON_quantity}
+
+                        return cbCustomer 
+                        ? CHARGEBEE_API().POST_NO_TARGET()(cbCustomer)() 
+                        : {id: elem.CUSTOMER_id, log:'Invalid for invoice creation'} 
+                    },
                 },
             }
         },
@@ -202,23 +221,6 @@ function RUNTREE(int) {
 // },
 
 // ///////////////////////////
-// create_invoice: {  //'Atleast one non recurring addon or charge item should be present'
-// RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice),
-// uiLabel: int('invoice_create_new'),
-// params : [{CUSTOMER_id: 'REQUIRED', }], 
-// validate : {
-//     input   : (e) => e.CUSTOMER_id,
-//     distant : (e) => e,
-//     output  : (e) => true,
-// },          
-// funct  : (process) => (elem) => {
-//     const cbCustomer = {customer_id: elem.CUSTOMER_id, object: 'invoices'}
-
-//     return cbCustomer 
-//     ? CHARGEBEE_API().POST_NO_TARGET()(cbCustomer)() 
-//     : {id: elem.CUSTOMER_id, log:'Invalid for invoice creation'} 
-// },
-// },
 
 // add_charge_to_pending: {  /*Invoice in Pending state is only supported to add line item or Collect Invoice*/
 //     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.add_charge_to_pending),
