@@ -8,7 +8,7 @@ function RUNTREE(int) {
                 apply_payment: { 
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_payment),
                     uiLabel: int('apply_payment'),
-                    params : [{INVOICE_id: 'required'}],
+                    params : [{INVOICE_id: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e,
@@ -28,7 +28,7 @@ function RUNTREE(int) {
                 collect: { 
                     RUN      : () => RUNTIME(RUNTREE(int).invoice.process.collect),
                     uiLabel  : int('invoice_collect'),
-                    params   : [{INVOICE_id: ''}],
+                    params   : [{INVOICE_id: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e && e.amount_due > 0,
@@ -45,7 +45,7 @@ function RUNTREE(int) {
                 retrieve_as_pdf: {  
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.retrieve_as_pdf),
                     uiLabel: int('retrieve_as_pdf'),
-                    params : [{INVOICE_id: 'required', DISPOSITION_type: 'inline'}],
+                    params : [{INVOICE_id: 'REQUIRED', DISPOSITION_type: 'inline'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => true,
@@ -63,7 +63,7 @@ function RUNTREE(int) {
                 refund: {
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.refund),
                     uiLabel: int('refund'),
-                    params : [{INVOICE_id: 'required'}],
+                    params : [{INVOICE_id: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e,
@@ -83,7 +83,7 @@ function RUNTREE(int) {
                 stop_dunning: {
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.stop_dunning),
                     uiLabel: int('stop_dunning'),
-                    params : [{INVOICE_id: 'required'}],
+                    params : [{INVOICE_id: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e && e.amount_due > 0,
@@ -103,7 +103,7 @@ function RUNTREE(int) {
                 void: {
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.void),
                     uiLabel: int('void'),
-                    params : [{INVOICE_id: ''}],
+                    params : [{INVOICE_id: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e,
@@ -122,7 +122,7 @@ function RUNTREE(int) {
                 write_off: {
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.write_off),
                     uiLabel: int('write_off'),
-                    params : [{INVOICE_id: ''}],
+                    params : [{INVOICE_id: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e,
@@ -142,7 +142,7 @@ function RUNTREE(int) {
                 del: {
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.del),
                     uiLabel: int('del'),
-                    params : [{INVOICE_id: ''}],
+                    params : [{INVOICE_id: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e,
@@ -159,22 +159,103 @@ function RUNTREE(int) {
                     },
 
                 },
-                create_invoice: {  //'Atleast one non recurring addon or charge item should be present'
+
+                create_invoice: { 
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice),
                     uiLabel: int('invoice_create_new'),
-                    params : [{CUSTOMER_id: 'REQUIRED', ADDON_id: '', ADDON_quantity: ''}], 
+                    params : [{CUSTOMER_id: 'REQUIRED', ADDON_id: '', ADDON_quantity: '', CHARGE_amount: '', CHARGE_description: ''}], 
                     validate : {
                         input   : (e) => e.CUSTOMER_id,
                         distant : (e) => e,
                         output  : (e) => true,
                     },          
                     funct  : (process) => (elem) => {
-                        const cbCustomer = {customer_id: elem.CUSTOMER_id, object: 'invoices',
-                        'addons[id][0]': elem.ADDON_id, 'addons[quantity][0]' : elem.ADDON_quantity}
+
+                        const cbCustomer = {customer_id: elem.CUSTOMER_id, object: 'invoices'}
+
+
+                        // 'addons[id][0]': elem.ADDON_id, 'addons[quantity][0]' : elem.ADDON_quantity,
+                        // 'charges[amount][0]' : elem.CHARGE_amount, 'charges[description][0]' : elem.CHARGE_description
 
                         return cbCustomer 
                         ? CHARGEBEE_API().POST_NO_TARGET()(cbCustomer)() 
                         : {id: elem.CUSTOMER_id, log:'Invalid for invoice creation'} 
+                    },
+                },
+
+                record_payment: {
+                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_payment),
+                    uiLabel: int('record_payment'),
+                    params : [{INVOICE_id: 'REQUIRED', TRANSACTION_amount : '', TRANSACTION_payment_method: ''}],
+                    validate : {
+                        input   : (e) => e.INVOICE_id,
+                        distant : (e) => e,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', 
+                        'transaction[amount]' : elem.TRANSACTION_amount, 'transaction[payment_method]' : elem.TRANSACTION_payment_method}
+
+                        return cbInvoice 
+                        && cbInvoice.id.length > 0 
+                        ? CHARGEBEE_API().POST()(cbInvoice)('record_payment') 
+                        : {id: elem.INVOICE_id, log:'Invalid for payment recording'} 
+                    },
+                },
+
+                record_refund: {
+                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_refund),
+                    uiLabel: int('record_refund'),
+                    params : [{INVOICE_id: 'REQUIRED', TRANSACTION_amount: '', TRANSACTION_payment_method: ''}],
+                    funct  : (process) => (elem) => {
+                        const cbInvoice = {id: INVOICE_id, object: 'invoice', 
+                        'transaction[amount]' : elem.TRANSACTION_amount, 'transaction[payment_method]' : elem.TRANSACTION_payment_method}
+
+                        return cbInvoice 
+                        && cbInvoice.id.length > 0 
+                        ? CHARGEBEE_API().POST()(cbInvoice)('record_refund') 
+                        : {id: elem.INVOICE_id, log:'Invalid for invoice refund record'} 
+                    },
+                },
+
+                update_details: { 
+                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.update_details),
+                    uiLabel: int('update_details'),
+                    params : [{INVOICE_id: 'REQUIRED', COMMENT: '',
+                    BILLING_ADDRESS_first_name : '', BILLING_ADDRESS_last_name : '',
+                    BILLING_ADDRESS_email : '', BILLING_ADDRESS_company : '', BILLING_ADDRESS_phone : '', 
+                    BILLING_ADDRESS_line1 : '', BILLING_ADDRESS_line2 : '', BILLING_ADDRESS_line3 : '',
+                    BILLING_ADDRESS_city : '',
+                    SHIPPING_ADDRESS_first_name : '', SHIPPING_ADDRESS_last_name : '',
+                    SHIPPING_ADDRESS_email : '', SHIPPING_ADDRESS_company : '', SHIPPING_ADDRESS_phone : '', 
+                    SHIPPING_ADDRESS_line1 : '', SHIPPING_ADDRESS_line2 : '', SHIPPING_ADDRESS_line3 : '',
+                    SHIPPING_ADDRESS_city : ''}],
+                    funct  : (process) => (elem) => {
+                        const cbInvoice = {id: INVOICE_id, object: 'invoice', comment: elem.COMMENT, 
+                        'billing_address[first_name]' : elem.BILLING_ADDRESS_first_name ,
+                        'billing_address[last_name]' : elem.BILLING_ADDRESS_last_name ,
+                        'billing_address[email]' : elem.BILLING_ADDRESS_email ,
+                        'billing_address[company]' : elem.BILLING_ADDRESS_company ,
+                        'billing_address[phone]' : elem.BILLING_ADDRESS_phone ,
+                        'billing_address[line1]' : elem.BILLING_ADDRESS_line1 ,
+                        'billing_address[line2]' : elem.BILLING_ADDRESS_line2 ,
+                        'billing_address[line3]' : elem.BILLING_ADDRESS_line3 ,
+                        'billing_address[city]' : elem.BILLING_ADDRESS_city ,
+                        'shipping_address[first_name]' : elem.SHIPPING_ADDRESS_first_name ,
+                        'shipping_address[last_name]' : elem.SHIPPING_ADDRESS_last_name ,
+                        'shipping_address[email]' : elem.SHIPPING_ADDRESS_email ,
+                        'shipping_address[company]' : elem.SHIPPING_ADDRESS_company ,
+                        'shipping_address[phone]' : elem.SHIPPING_ADDRESS_phone ,
+                        'shipping_address[line1]' : elem.SHIPPING_ADDRESS_line1 ,
+                        'shipping_address[line2]' : elem.SHIPPING_ADDRESS_line2 ,
+                        'shipping_address[line3]' : elem.SHIPPING_ADDRESS_line3 ,
+                        'shipping_address[city]' : elem.SHIPPING_ADDRESS_city
+                    }
+
+                        return cbInvoice 
+                        && cbInvoice.id.length > 0 
+                        ? CHARGEBEE_API().POST()(cbInvoice)('update_details') 
+                        : {id: elem.INVOICE_id, log:'Invalid for invoice update_details'} 
                     },
                 },
             }
@@ -199,28 +280,14 @@ function RUNTREE(int) {
                         : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for promotional_credits addition'} 
                     }
                 }
+
             }
         }
     }
 }
 
 
-// update: { // override 
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.update),
-//     uiLabel: int('update'),
-//     params : [{INVOICE_id: ''}],
-//     funct  : (process) => (elem) => {
-//         const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-//         || {id: INVOICE_id, object: 'invoice'}
-
-//         return cbInvoice 
-//         && cbInvoice.id.length > 0 
-//         ? CHARGEBEE_API().POST()(cbInvoice)('update_details') 
-//         : {id: elem.INVOICE_id, log:'Invalid for invoice update'} 
-//     },
-// },
-
-// ///////////////////////////
+/////////////////////////////
 
 // add_charge_to_pending: {  /*Invoice in Pending state is only supported to add line item or Collect Invoice*/
 //     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.add_charge_to_pending),
@@ -272,40 +339,6 @@ function RUNTREE(int) {
 //     },
 // },
 
-// record_payment: {  /*transaction[payment_method] : cannot be blank*/
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_payment),
-//     uiLabel: int('record_payment'),
-//     params : [{INVOICE_id: 'required', TRANSACTION_type: 'cash'}],
-//     validate : {
-//         input   : (e) => e.INVOICE_id,
-//         distant : (e) => e,
-//         output  : (e) => true,
-//     },
-//     funct  : (process) => (elem) => {
-//         const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', 'transaction[payment_method]' : elem.TRANSACTION_type}
-
-//         return cbInvoice 
-//         && cbInvoice.id.length > 0 
-//         ? CHARGEBEE_API().POST()(cbInvoice)('record_payment') 
-//         : {id: elem.INVOICE_id, log:'Invalid for payment recording'} 
-//     },
-// },
-
-
-// record_refund: { // transaction[payment_method] : cannot be blank
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_refund),
-//     uiLabel: int('record_refund'),
-//     params : [{INVOICE_id: ''}],
-//     funct  : (process) => (elem) => {
-//         const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-//         || {id: INVOICE_id, object: 'invoice'}
-
-//         return cbInvoice 
-//         && cbInvoice.id.length > 0 
-//         ? CHARGEBEE_API().POST()(cbInvoice)('record_refund') 
-//         : {id: elem.INVOICE_id, log:'Invalid for invoice refund record'} 
-//     },
-// },
 
 // remove_payment: { // transaction[id] : cannot be blank
 //     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.remove_payment),

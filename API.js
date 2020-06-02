@@ -65,11 +65,18 @@ function CHARGEBEE_API() {
           return  function (object) {
             return  function (action) {
               try{
+                var urlencoded = "?";
+                for (let [key, value] of Object.entries(object)) {
+                  if (value !== undefined && value && value != '' && value != 'REQUIRED') urlencoded = urlencoded.concat(key + '=' + value + '&');
+                  else delete object[key];
+                }
+                if (urlencoded[urlencoded.length -1] == '&') urlencoded.slice(0, urlencoded.length-1);
+
                 /* Check if the object already exists in Chargebee */
                 const exists = CHARGEBEE_API().GET(credential) (object.object) ("?id[is]="+object.id) () [0]
                 /* if it does, we access the object before writing it */
                 const url    = 'https://'+credential.api_endpoint+object.object+'s'
-                + (exists ? "/"+object.id+"/"+( action || "") : "")
+                + (exists ? "/"+object.id+"/"+( action || "") : "")+(urlencoded||"");
                 console.log("url", url);
                 console.log("object", object);
                 const header = _getChargebeeHeader("POST") (credential) (object) ()
@@ -99,16 +106,15 @@ function CHARGEBEE_API() {
               try{
                 var urlencoded = "?";
                 for (let [key, value] of Object.entries(object)) {
-                  if (value !== undefined && value && value != '') {
-                    urlencoded = urlencoded.concat(key + '=' + value + '&');
-                  }
+                  if (value !== undefined && value && value != '' && value != 'REQUIRED') urlencoded = urlencoded.concat(key + '=' + value + '&');
+                  else delete object[key];
                 }
                 if (urlencoded[urlencoded.length -1] == '&') urlencoded.slice(0, urlencoded.length-1);
 
                 const url    = 'https://'+credential.api_endpoint+object.object+(action||"")+(urlencoded||"");
                 console.log("url", url);
                 console.log("object", object);
-                const header = _getChargebeeHeader("POST") (credential) (urlencoded) ()
+                const header = _getChargebeeHeader("POST") (credential) (object) ()
                 /* If an object attribute can't be updated, Chargebee throw an error. We delete the faulty attribute then try to repost the object */
                 do{
                   var  response = JSON.parse(UrlFetchApp.fetch(url, header).getContentText())
