@@ -357,8 +357,41 @@ function RUNTREE(int) {
                         ? CHARGEBEE_API().POST_NO_TARGET()(callObj)('/add') 
                         : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for promotional_credits addition'} 
                     }
-                }
+                },
+                deduct: { 
+                    RUN      : () => RUNTIME(RUNTREE(int).promotional_credits.process.deduct),
+                    uiLabel  : int('deduct_promotional_credits'),
+                    params   : [{CUSTOMER_id: 'REQUIRED', AMOUNT: '1', DESCRIPTION : Session.getActiveUser().getEmail() + ': deducted a credit'}],
+                    validate : {
+                        input   : (e) => e.CUSTOMER_id,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {customer_id: elem.CUSTOMER_id, amount: (elem.AMOUNT*100).toString(), description: elem.DESCRIPTION, object: 'promotional_credits'}
 
+                        return callObj 
+                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)('/deduct') 
+                        : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for promotional_credits deduction'} 
+                    }
+                },
+                setcredit: { 
+                    RUN      : () => RUNTIME(RUNTREE(int).promotional_credits.process.setcredit),
+                    uiLabel  : int('setcredit'),
+                    params   : [{CUSTOMER_id: 'REQUIRED', AMOUNT: '1', DESCRIPTION : Session.getActiveUser().getEmail() + ': setted a credit'}],
+                    validate : {
+                        input   : (e) => e.CUSTOMER_id,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {customer_id: elem.CUSTOMER_id, amount: (elem.AMOUNT*100).toString(), description: elem.DESCRIPTION, object: 'promotional_credits'}
+
+                        return callObj 
+                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)('/set') 
+                        : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for promotional_credits set'} 
+                    }
+                },
             }
         },
         credit_notes: {

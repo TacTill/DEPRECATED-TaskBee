@@ -65,12 +65,8 @@ function CHARGEBEE_API() {
           return  function (object) {
             return  function (action) {
               try{
-                var urlencoded = "?";
-                for (let [key, value] of Object.entries(object)) {
-                  if (value !== undefined && value && value != '' && value != 'REQUIRED') urlencoded = urlencoded.concat(key + '=' + value + '&');
-                  else delete object[key];
-                }
-                if (urlencoded[urlencoded.length -1] == '&') urlencoded.slice(0, urlencoded.length-1);
+                const objcp = {...object};
+                const urlencoded = toUrlEncoded("?", objcp);
 
                 /* Check if the object already exists in Chargebee */
                 const exists = CHARGEBEE_API().GET(credential) (object.object) ("?id[is]="+object.id) () [0]
@@ -104,12 +100,9 @@ function CHARGEBEE_API() {
           return  function (object) {
             return  function (action) {
               try{
-                var urlencoded = "?";
-                for (let [key, value] of Object.entries(object)) {
-                  if (value !== undefined && value && value != '' && value != 'REQUIRED') urlencoded = urlencoded.concat(key + '=' + value + '&');
-                  else delete object[key];
-                }
-                if (urlencoded[urlencoded.length -1] == '&') urlencoded.slice(0, urlencoded.length-1);
+
+                const objcp = {...object};
+                const urlencoded = toUrlEncoded("?", objcp);
 
                 const url    = 'https://'+credential.api_endpoint+object.object+(action||"")+(urlencoded||"");
                 console.log("url", url);
@@ -137,6 +130,21 @@ function CHARGEBEE_API() {
         },
     }
 }
+
+
+function toUrlEncoded(old, objs) {
+  if (Object.keys(objs).length <= 0) 
+    return old.slice(0, old.length-1);
+
+  if (Object.keys(objs)[0].includes("[")) 
+    old = old.concat(Object.keys(objs)[0] + '=' + objs[Object.keys(objs)[0]] + '&');
+  
+
+  delete objs[Object.keys(objs)[0]];
+
+  return toUrlEncoded(old, objs);
+}
+
 
 /** 
 * Prepare the HTTP request that will be send to Chargebee's API
