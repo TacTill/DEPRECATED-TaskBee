@@ -52,7 +52,7 @@ function RUNTREE(int) {
                         output  : (e) => true,
                     },
                     funct  : (process) => (elem) => {
-                        const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', disposition_type: elem.DISPOSITION_type,  step:'jesaipa'}
+                        const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', disposition_type: elem.DISPOSITION_type}
 
                         return cbInvoice 
                         ? CHARGEBEE_API().POST()(cbInvoice)('pdf') 
@@ -216,6 +216,11 @@ function RUNTREE(int) {
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_refund),
                     uiLabel: int('record_refund'),
                     params : [{INVOICE_id: 'REQUIRED', TRANSACTION_amount: '', TRANSACTION_payment_method: ''}],
+                    validate : {
+                        input   : (e) => e.INVOICE_id,
+                        distant : (e) => e,
+                        output  : (e) => true,
+                    },
                     funct  : (process) => (elem) => {
                         const cbInvoice = {id: INVOICE_id, object: 'invoice', 
                         'transaction[amount]' : elem.TRANSACTION_amount, 'transaction[payment_method]' : elem.TRANSACTION_payment_method}
@@ -239,6 +244,11 @@ function RUNTREE(int) {
                     SHIPPING_ADDRESS_email : '', SHIPPING_ADDRESS_company : '', SHIPPING_ADDRESS_phone : '', 
                     SHIPPING_ADDRESS_line1 : '', SHIPPING_ADDRESS_line2 : '', SHIPPING_ADDRESS_line3 : '',
                     SHIPPING_ADDRESS_city : ''}],
+                    validate : {
+                        input   : (e) => e.INVOICE_id,
+                        distant : (e) => e,
+                        output  : (e) => true,
+                    },
                     funct  : (process) => (elem) => {
                         const cbInvoice = {id: INVOICE_id, object: 'invoice', comment: elem.COMMENT, 
                         'billing_address[first_name]' : elem.BILLING_ADDRESS_first_name ,
@@ -267,6 +277,65 @@ function RUNTREE(int) {
                         : {id: elem.INVOICE_id, log:'Invalid for invoice update_details'} 
                     },
                 },
+
+                remove_payment: { 
+                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.remove_payment),
+                    uiLabel: int('remove_payment'),
+                    params : [{INVOICE_id: 'REQUIRED', TRANSACTION_id: ''}],
+                    validate : {
+                        input   : (e) => e.INVOICE_id,
+                        distant : (e) => e,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const cbInvoice = {id: elem.INVOICE_id, object: 'invoice',
+                        'transaction[id]': elem.TRANSACTION_id}
+
+                        return cbInvoice 
+                        && cbInvoice.id.length > 0 
+                        ? CHARGEBEE_API().POST()(cbInvoice)('remove_payment') 
+                        : {id: elem.INVOICE_id, log:'Invalid for invoice payment removal'} 
+                    },
+                },
+
+                remove_credit_note: { 
+                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.remove_credit_note),
+                    uiLabel: int('remove_credit_note'),
+                    params : [{INVOICE_id: 'REQUIRED', CREDIT_note_id: ''}],
+                    validate : {
+                        input   : (e) => e.INVOICE_id,
+                        distant : (e) => e,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', 'credit_note[id]': elem.CREDIT_note_id}
+
+                        return cbInvoice 
+                        && cbInvoice.id.length > 0 
+                        ? CHARGEBEE_API().POST()(cbInvoice)('remove_credit_note') 
+                        : {id: elem.INVOICE_id, log:'Invalid for invoice credit_note removal'} 
+                    },
+                },
+
+                apply_credits: { 
+                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_credits),
+                    uiLabel: int('invoice_apply_credits'),
+                    params : [{INVOICE_id: '', COMMENT: '', CREDIT_note_id: ''}],
+                    validate : {
+                        input   : (e) => e.INVOICE_id,
+                        distant : (e) => e,
+                        output  : (e) => true,
+                    }, 
+                    funct  : (process) => (elem) => {
+                        const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', 
+                        comment: elem.COMMENT, 'credit_notes[id][0]': elem.CREDIT_note_id}
+
+                        return cbInvoice 
+                        ? CHARGEBEE_API().POST()(cbInvoice)('apply_credits') 
+                        : {id: elem.INVOICE_id, log:'Invalid for credit application'} 
+                    },
+                },
+
             }
         },
         promotional_credits: {
@@ -275,7 +344,7 @@ function RUNTREE(int) {
 
                 add: { 
                     RUN      : () => RUNTIME(RUNTREE(int).promotional_credits.process.add),
-                    uiLabel  : int('promotional_credits'),
+                    uiLabel  : int('add_promotional_credits'),
                     params   : [{CUSTOMER_id: 'REQUIRED', AMOUNT: "1", DESCRIPTION: Session.getActiveUser().getEmail() + ': added a credit'}],
                     validate : {
                         input   : (e) => e.CUSTOMER_id,
@@ -291,12 +360,118 @@ function RUNTREE(int) {
                 }
 
             }
+        },
+        credit_notes: {
+            uiLabel: int('credit_notes'),
+            process : {
+
+                create: { 
+                    RUN      : () => RUNTIME(RUNTREE(int).credit_notes.process.create),
+                    uiLabel  : int('credit_notes create'),
+                    params   : [{REFERENCE_invoice_id: 'REQUIRED', TOTAL:'', TYPE: '', REASON_code: '', CUSTOMER_notes:'',COMMENT:''}],
+                    validate : {
+                        input   : (e) => e.REFERENCE_invoice_id,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {object: 'credit_notes', 
+                        reference_invoice_id : elem.REFERENCE_invoice_id, total: (elem.TOTAL*100).toString(), type : elem.TYPE, reason_code : elem.REASON_code, customer_notes: elem.CUSTOMER_notes, comment:elem.COMMENT}
+                        return callObj 
+                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)('') 
+                        : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for credit_notes creation'} 
+                    }
+                }
+
+            }
+        },
+        hosted_pages: {
+            uiLabel: int('hosted_pages'),
+            process : {
+
+                manage_payment_sources : { 
+                    RUN      : () => RUNTIME(RUNTREE(int).hosted_pages.process.manage_payment_sources ),
+                    uiLabel  : int('manage_payment_sources hosted_pages'),
+                    params   : [{CUSTOMER_id: 'REQUIRED'}],
+                    validate : {
+                        input   : (e) => e.CUSTOMER_id,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {'customer[id]':elem.CUSTOMER_id, object: 'hosted_pages'}
+                        return callObj 
+                        ? {id: elem.CUSTOMER_id, url:CHARGEBEE_API().POST_NO_TARGET()(callObj)('/manage_payment_sources').hosted_page.url}
+                        : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for hosted_pages manage_payment_sources'} 
+                    }
+                }
+
+            }
         }
     }
 }
 
 
-/////////////////////////////
+// INVOICE
+
+//         import_invoice: {  //This API is not enabled for live sites by default. Please contact support@chargebee.com to get this enabled.
+//             RUN    : () => RUNTIME(RUNTREE(int).invoice.process.import_invoice),
+//             uiLabel: int('import_invoice'),
+//             params : [{INVOICE_id: '', CUSTOMER_id: '', TOTAL: '', SUBSCRIPTION_id: ''}],
+//             validate : {
+//                 input   : (e) => e.INVOICE_id,
+//                 distant : (e) => e,
+//                 output  : (e) => true,
+//             },
+//             funct  : (process) => (elem) => {
+//                 const cbInvoice = {id: elem.INVOICE_id, object: 'invoices'}
+
+//                 return cbInvoice 
+//                 && cbInvoice.id.length > 0 
+//                 ? CHARGEBEE_API().POST_NO_TARGET()(cbInvoice)('/import_invoice') 
+//                 : {id: elem.INVOICE_id, log:'Invalid for invoice importation'} 
+//             },
+//         },
+
+//         create_invoice_charge: { // deprec, better use create invoice
+//             RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice_charge),
+//             uiLabel: int('invoice_create_new_charge'),
+//             params : [{CUSTOMER_id: '', SUBSCRIPTION_id: '', CHARGE_amount: '', CHARGE_description ''}], 
+//             validate : {
+//                 input   : (e) => e.INVOICE_id,
+//                 distant : (e) => e,
+//                 output  : (e) => true,
+//             },
+//             funct  : (process) => (elem) => {
+//                 const cbCustomerOrSub = CHARGEBEE_API().GET()('customer')('id[is]='+elem.CUSTOMER_id)()[0]
+//                 || CHARGEBEE_API().GET()('subscription')('id[is]='+elem.SUBSCRIPTION_id)()[0]
+//             || {customer_id: elem.CUSTOMER_id, amount: CHARGE_amount, description: CHARGE_description/*, object:'invoices/charge'*/}
+//         || {subscription_id: elem.SUBSCRIPTION_id, amount: CHARGE_amount, description: CHARGE_description/*, object:'invoices/charge'*/} 
+
+//         return cbCustomerOrSub 
+//         && cbCustomerOrSub.id.length > 0 
+//         ? CHARGEBEE_API().POST()(cbCustomerOrSub)() // invoices/charge? 
+//         : {id: elem.INVOICE_id, log:'Invalid for invoice charge creation'} 
+//     },
+// },
+
+
+//         create_invoice_charge_addon: { // deprec, better use create invoice
+//             RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice_charge_addon),
+//             uiLabel: int('invoice_create_new_addon'),
+//             params : [{CUSTOMER_id: '', SUBSCRIPTION_id: '', ADDON_id: ''}], 
+//             funct  : (process) => (elem) => {
+//                 const cbCustomerOrSub = CHARGEBEE_API().GET()('customer')('id[is]='+elem.CUSTOMER_id)()[0]
+//                 || CHARGEBEE_API().GET()('subscription')('id[is]='+elem.SUBSCRIPTION_id)()[0]
+//             || {customer_id: elem.CUSTOMER_id, addon_id: ADDON_id /*, object:'invoices/charge_addon'*/}
+//         || {subscription_id: elem.SUBSCRIPTION_id, addon_id: ADDON_id /*, object:'invoices/charge_addon'*/} 
+
+//         return cbCustomerOrSub 
+//         && cbCustomerOrSub.id.length > 0 
+//         ? CHARGEBEE_API().POST()(cbCustomerOrSub)() // invoices/charge_addon? 
+//         : {id: elem.INVOICE_id, log:'Invalid for invoice addon creation'} 
+//     },
+// },
 
 // add_charge_to_pending: {  /*Invoice in Pending state is only supported to add line item or Collect Invoice*/
 //     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.add_charge_to_pending),
@@ -348,142 +523,6 @@ function RUNTREE(int) {
 //     },
 // },
 
-
-// remove_payment: { // transaction[id] : cannot be blank
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.remove_payment),
-//     uiLabel: int('remove_payment'),
-//     params : [{INVOICE_id: '', TRANSACTION_id: ''}],
-//     funct  : (process) => (elem) => {
-//         const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-//         || {id: INVOICE_id, object: 'invoice', transaction.id: TRANSACTION_id}
-
-//         return cbInvoice 
-//         && cbInvoice.id.length > 0 
-//         ? CHARGEBEE_API().POST()(cbInvoice)('remove_payment') 
-//         : {id: elem.INVOICE_id, log:'Invalid for invoice payment removal'} 
-//     },
-// },
-
-
-// remove_credit_note: { // credit_note[id] : cannot be blank
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.remove_credit_note),
-//     uiLabel: int('remove_credit_note'),
-//     params : [{INVOICE_id: '', CREDIT_note_id: ''}],
-//     funct  : (process) => (elem) => {
-//         const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-//         || {id: INVOICE_id, object: 'invoice', credit_note[id]: CREDIT_note_id}
-
-//         return cbInvoice 
-//         && cbInvoice.id.length > 0 
-//         ? CHARGEBEE_API().POST()(cbInvoice)('remove_credit_note') 
-//         : {id: elem.INVOICE_id, log:'Invalid for invoice credit_note removal'} 
-//     },
-// },
-
-// apply_existing_credits: { // return non error but nothing happens
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_credit),
-//     uiLabel: int('invoice_apply_existing_credits'),
-//     params : [{INVOICE_id: ''}],
-//     validate : {
-//         input   : (e) => e.INVOICE_id,
-//         distant : (e) => e,
-//         output  : (e) => true,
-//     },
-//     condition: ( ) => true,
-//     funct  : (process) => (e) => {
-//         const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+e.INVOICE_id)()[0]
-//         const cbCredit  = CHARGEBEE_API().GET()('credit_note')('id[is]='+e.CREDIT_id)()[0] 
-//         || {amount: CREDIT_amount, type: e.CREDIT_type,}
-
-//         return cbInvoice 
-//         && cbInvoice.amount_due > 0 
-//         && cbInvoice.amount_du >= cb.Credit.amount*100 
-//         ? CHARGEBEE_API().POST()(cbInvoice)('apply_credit') 
-//         : {id: elem.INVOICE_id, log:'Invalid for credit application'} 
-//     },
-// },
-// apply_new_credits: { // return non error but nothing happens
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_credit),
-//     uiLabel: int('invoice_apply_new_credits'),
-//     params : [{INVOICE_id: '',CREDIT_amount:''}], 
-//     funct  : (process) => (elem) => {
-//         const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-//         const cbCredit  = CHARGEBEE_API().GET()('credit_note')('id[is]='+elem.CREDIT_id)()[0] 
-//         // pourquoi ce call est fait 2 fois ^
-//         || {amount: CREDIT_amount, type: elem.CREDIT_type,}
-
-//         return cbInvoice 
-//         && cbInvoice.amount_due > 0 
-//         && cbInvoice.amount_du >= cb.Credit.amount*100 
-//         ? CHARGEBEE_API().POST()(cbInvoice)('apply_credit') 
-//         : {id: elem.INVOICE_id, log:'Invalid for credit application'} 
-//     },
-// },
-
-
-// import_invoice: { //to add to the no target post
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.import_invoice),
-//     uiLabel: int('import_invoice'),
-//     params : [{INVOICE_id: ''}],
-//     funct  : (process) => (elem) => {
-//         const cbInvoice = CHARGEBEE_API().GET()('invoice')('id[is]='+elem.INVOICE_id)()[0]
-//     || {id: INVOICE_id/*, object: 'invoices/import_invoice'*/}
-
-//     return cbInvoice 
-//     && cbInvoice.id.length > 0 
-//     ? CHARGEBEE_API().POST()(cbInvoice)() 
-//     : {id: elem.INVOICE_id, log:'Invalid for invoice importation'} 
-// },
-// },
-
-
-
-// create_invoice_charge: {//to add to the no target post
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice_charge),
-//     uiLabel: int('invoice_create_new_charge'),
-//     params : [{CUSTOMER_id: '', SUBSCRIPTION_id: '', CHARGE_amount: '', CHARGE_description ''}], 
-//     funct  : (process) => (elem) => {
-//         const cbCustomerOrSub = CHARGEBEE_API().GET()('customer')('id[is]='+elem.CUSTOMER_id)()[0]
-//         || CHARGEBEE_API().GET()('subscription')('id[is]='+elem.SUBSCRIPTION_id)()[0]
-//     || {customer_id: elem.CUSTOMER_id, amount: CHARGE_amount, description: CHARGE_description/*, object:'invoices/charge'*/}
-// || {subscription_id: elem.SUBSCRIPTION_id, amount: CHARGE_amount, description: CHARGE_description/*, object:'invoices/charge'*/} 
-
-// return cbCustomerOrSub 
-// && cbCustomerOrSub.id.length > 0 
-// ? CHARGEBEE_API().POST()(cbCustomerOrSub)() // invoices/charge? 
-// : {id: elem.INVOICE_id, log:'Invalid for invoice charge creation'} 
-// },
-// },
-
-
-// create_invoice_charge_addon: { //to add to the no target post
-//     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.create_invoice_charge_addon),
-//     uiLabel: int('invoice_create_new_addon'),
-//     params : [{CUSTOMER_id: '', SUBSCRIPTION_id: '', ADDON_id: ''}], 
-//     funct  : (process) => (elem) => {
-//         const cbCustomerOrSub = CHARGEBEE_API().GET()('customer')('id[is]='+elem.CUSTOMER_id)()[0]
-//         || CHARGEBEE_API().GET()('subscription')('id[is]='+elem.SUBSCRIPTION_id)()[0]
-//     || {customer_id: elem.CUSTOMER_id, addon_id: ADDON_id /*, object:'invoices/charge_addon'*/}
-// || {subscription_id: elem.SUBSCRIPTION_id, addon_id: ADDON_id /*, object:'invoices/charge_addon'*/} 
-
-// return cbCustomerOrSub 
-// && cbCustomerOrSub.id.length > 0 
-// ? CHARGEBEE_API().POST()(cbCustomerOrSub)() // invoices/charge_addon? 
-// : {id: elem.INVOICE_id, log:'Invalid for invoice addon creation'} 
-// },
-// },
-
-// credit_note: {
-//     uiLabel: int('credit'),
-//     process : {
-//         create: {
-//             RUN: () => RUNTIME(RUNTREE(int).credit_note.process.create),
-//             uiLabel: int('credit_create'),
-//             params: [{CREDIT_id:'', CREDIT_amount:'', CREDIT_type:'',}], 
-//             funct: (process) => (elem) => { return true },
-//         }
-//     }
-// },
 
 function EN_txt (field) {
     const translation = {

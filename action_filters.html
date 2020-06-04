@@ -146,7 +146,7 @@
         else return false;
 
         for (var i = 0; i < argument[2].length; i++) {
-            createOpIn(argument[1], argument[2][i]);
+            createOpIn(argument[1], argument[2][i], i);
         }
     }
 
@@ -185,12 +185,12 @@
     // these functions update the global corresponding to their selects
     function actionSelect() {
         selectedAction = $( "#mainSelector option:selected" ).text();
+        if(!isPOST(selectedAction))
+        {
+            addFilter();
+            document.getElementById('addFilterButton').style.display = "inline-block";
+        }
     }
-
-    function authSelect() {
-        selectedAuth = $( "#APISelector option:selected" ).text();
-    }
-
 
     // this function creates a filter in the "filtersform" div when called
     // a trigger is placed on the "+ add filter" button
@@ -264,9 +264,9 @@
     }
 
     // adds an option of name  "name" to a selector of id "identifier"
-    function createOpIn(identifier, name) {
+    function createOpIn(identifier, name, index) {
         var x = document.createElement("OPTION");
-        x.setAttribute("value", name);
+        x.setAttribute("value", index);
         var t = document.createTextNode(name);
         x.appendChild(t);
         document.getElementById(identifier).appendChild(x);
@@ -287,10 +287,23 @@
     }
 
     // checks if the request is a post or a get
-    function isPOST(D) {
-        if (D == "invoice" 
-            || D == "credit_note" 
-            || D == "promotional_credits") 
+    function isPOST(A) {
+
+        if (A == "apply_payment" 
+            || A == "collect" 
+            || A == "retrieve_as_pdf" 
+            || A == "stop_dunning" 
+            || A == "void" 
+            || A == "write_off" 
+            || A == "del" 
+            || A == "create_invoice" 
+            || A == "record_refund" 
+            || A == "add" 
+            || A == "create" 
+            || A == "record_payment" 
+            || A == "manage_payment_sources" 
+            || A == "update_details" 
+            || A == "refund") 
             return true;
         return false;
     }
@@ -314,11 +327,7 @@
         google.script.run
         .withSuccessHandler(generateOptions)
         .getOptionsFromBack("actions"+selectedData, "mainSelector")
-        if(!isPOST(selectedData))
-        {
-            addFilter();
-            document.getElementById('addFilterButton').style.display = "inline-block";
-        }
+
     }
 
     // onload function triggers at the opening of this vue

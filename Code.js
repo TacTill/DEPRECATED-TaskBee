@@ -24,26 +24,27 @@ function storeAuth(sub, token) {
   return true;
 }
 
-function isPOST(D) {
-  if (D == "invoice" || D == "credit_note" || D == "promotional_credits") 
+function isPOST(D, A) {
+  if (RUNTREE(EN_txt)[D].process[A] !== undefined)
     return true;
   return false;
 }
 
 function sendReq(selectedData, selectedAction, filters, auth) {
+
   switchpage(3);
-  console.log('+'+selectedData+'+'+selectedAction+'+')
-  if (isPOST(selectedData))
+  console.log('+'+selectedData+'+'+selectedAction+'+'+JSON.stringify(CHARGEBEE_API().AUTH())+'+');
+  if (isPOST(selectedData, selectedAction))
   {
     try {const resultpost = CONTROLLER().run (selectedData) (selectedAction); console.log(resultpost); switchpage(4); return true}
     catch (err) {console.error(err); switchpage(5) ; return false}
   }
   else 
   {
-    var credentials = {};
-    credentials.subdomain = getWorkingAuths()[0]["api_endpoint"];
-    credentials.token = getWorkingAuths()[0]["api_user"]
-    const resultget = getObjectsFromChargebee(selectedData)(credentials)(null)
+    const credentials = {subdomain: CHARGEBEE_API().AUTH().api_endpoint, token: CHARGEBEE_API().AUTH().api_user};
+    const resultget = getObjectsFromChargebee(selectedData)(credentials)();
+    writeObjectsOnSheet(SpreadsheetApp.getActive().getSheetByName('SYS_auth')) ([resultget]) ();
+
     console.log(resultget);
   }
 }
@@ -72,13 +73,47 @@ function switchpage(newone) {
 
 function getOptionsFromBack(whatfor, identifier) {
   var opts;
-  if (whatfor.indexOf('data') >= 0) {opts = Object.keys(RUNTREE(EN_txt)); /*opts.push.apply(opts,getApiEndpoints()); */}
-  else if (whatfor.indexOf('actions') >= 0) {if(isPOST(whatfor.substring(7))) {opts = Object.keys(RUNTREE(EN_txt)[whatfor.substring(7)].process)} else opts = getAttributesOptions(getApiEndpointObject(whatfor.substring(7))).filter(f=>f.type == "list").map(a => a.name);}
+  if (whatfor.indexOf('data') >= 0) {opts = [...new Set(Object.keys(RUNTREE(EN_txt)) /*.concat(getApiEndpoints())*/)];}
+  else if (whatfor.indexOf('actions') >= 0) {opts = [...new Set(postAttributes(whatfor.substring(7))/*.concat(getAttributes(whatfor.substring(7)))*/)];}
   else if (whatfor.indexOf('filter') >= 0) opts = [' ', 'foo', 'bar']; 
   else if (whatfor.indexOf('auths') >= 0) opts = CHARGEBEE_API().AUTH().api_endpoint;
   else {switchpage(2); return false;}
 
+  console.log("opts", opts);
   return [whatfor, identifier, opts];
+}
+
+function postAttributes(data) {
+  try
+  {
+    console.log(data);
+    return Object.keys(RUNTREE(EN_txt)[data].process)
+  }
+  catch (error)
+  {
+    console.error(error);
+    return []
+  }
+
+}
+
+function getAttributes(data) {
+  try
+  {
+    console.log("data" , data);
+    const attopts = getAttributesOptions(getApiEndpointObject(data));
+    console.log("attopts" , attopts);
+    const filtered = attopts.filter(f=>f.type == "list") 
+    console.log("filtered" , filtered);
+    const mapped = filtered.map(a => a.name);
+    console.log("mapped" , mapped);
+    return mapped;
+  }
+  catch (error)
+  {
+    console.error(error)
+    return [];
+  } 
 }
 
 function getApiJsonData() {
