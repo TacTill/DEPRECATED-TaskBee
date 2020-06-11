@@ -81,7 +81,6 @@ function _getChargebeeUrl(subdomain) {
         return (
           "https://" +
           subdomain +
-          ".chargebee.com/api/v2/" +
           object +
           "s" +
           "?" +

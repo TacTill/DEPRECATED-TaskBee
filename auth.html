@@ -6,7 +6,7 @@
         .parent 
         {
             display: grid;
-            grid-template-rows: 1fr 1fr 1fr;
+            grid-template-rows: 9vh 30vh 40vh 15vh;
         }
         .textholder
         {
@@ -15,9 +15,14 @@
         }
         #hello_user
         {
-            margin-top: 25px;
-            font-size: 2.5em;
-            line-height: 42px;
+            margin-top: 10vh;
+            margin-left: 15vw;
+            color: #2D2ACD;
+        }
+        #actualUser
+        {
+            margin-left: 15vw;
+            color: #2D2ACD;
         }
         #bottom
         {
@@ -34,7 +39,8 @@
         }
         p
         {
-            text-align: center;
+            font-size: 2em;
+            text-align: left;
         }
     </style>
     <!-- bootstrap -->
@@ -55,11 +61,15 @@
 
     <meta charset="utf-8">
 </head>
-<body onload="on_load();" style="margin: 0; font-family: Roboto; font-style: normal; font-size: 1.3em;">
+<body onload="on_load();" style="margin: 0; font-family: Roboto,sans-serif; font-style: normal; font-size: 1.3em;">
+
     <div id="page1" class="parent">
 
+        <nav role="navigation" style="background: #6C69FF;">
+        </nav>
+
         <div id="top">
-            <p id="hello_user">Welcome<br>to Taskbee</p>
+            <p id="hello_user">Hello<br></p>
             <p id="actualUser"></p>
             <br>
         </div>
@@ -69,21 +79,23 @@
             <div style="display:table">
                 <div id="statement" style="padding-left: 50px; opacity: 0.75; display:table-cell">
                     Please, enter your<br>ChargeBee informations&nbsp; 
+                    <a href="https://apidocs.chargebee.com/docs/api#api_authentication" target="_blank">
                     <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
                     <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                    </a>
                 </div>
             </div>
             <br>
-            <label for="subdomain" style="margin-left: 50px;">Subdomain</label>
-            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="subdomain" placeholder="your subdomain here">
+            <label for="subdomain" style="margin-left: 18vw;">Subdomain</label>
+            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="subdomain" placeholder="taskbee.chargebee.com/api/v2/">
             <br>
-            <label for="token" style="margin-left: 50px;">Token</label>
-            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="token" placeholder="your CB token here">
+            <label for="token" style="margin-left: 18vw;">Token</label>
+            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="token" placeholder="test_t45k833t45k833t45k833t45k833t45k833">
 
         </div>
 
         <div id="bottom">
-            <button type="button" style="margin: 20px; background-image: none; border-color: #6C69FF" id="validatebtn" class="btn btn-primary" onclick="validAuth()" disabled>Confirm</button>
+            <button type="button" style="background-image: none; border-color: #6C69FF; margin: auto;" id="validatebtn" class="btn btn-primary" onclick="validAuth()" disabled>Confirm</button>
         </div>
     </div>
 </body>
@@ -101,7 +113,7 @@
     }
 
     function updateUser(email){
-        document.getElementById("actualUser").innerHTML = email.substring(0, email.indexOf('@'));    
+        document.getElementById("actualUser").innerHTML = email.substring(0, email.indexOf('@'))+' !';    
     }
 
     function good(argument) {

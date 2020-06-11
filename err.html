@@ -6,8 +6,7 @@
     <style>
         .parent 
         {
-            display: grid;
-            grid-template-rows: 50px 1fr 100px;
+            height: 100vh;
         }
         #bottom
         {
@@ -22,7 +21,6 @@
             margin-block-end: 0;
             margin-bottom: 0 !important;
         }
-
         #orangeBox{
             margin: auto;
             width:200px;
@@ -32,7 +30,6 @@
             border-radius:6px;
             box-shadow:2px 2px 4px 0 white;
         }
-
         #orangeBox:before,#orangeBox:after{
             content:'';
             position:absolute;
@@ -43,7 +40,6 @@
             top:98px;
             box-shadow:0 0 2px 0 #ccc;
         }
-
         #orangeBox:before{
             -webkit-transform:rotate(45deg);
             -moz-transform:rotate(45deg);
@@ -56,7 +52,6 @@
             transform:rotate(-45deg);
             right:2px;
         }
-
         body {
             text-align: center;
             padding: 40px 0;
@@ -115,16 +110,14 @@
         <div id="top">
         </div>
         <div id="middle">
-            <div id="orangeBox">
-                
+            <div id="orangeBox">  
             </div>
-            <br>
             <br>
             <br>
             <h1>ERROR</h1> 
             <p>Something went wrong<br/>check your logs</p>
+            <br>
         </div>
-    </div>
 
         <div id="bottom">
             <button type="button" class="btn btn-primary" onclick="backHome();">Confirm</button>

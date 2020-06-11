@@ -43,7 +43,7 @@ function _getProcessSheet(process) {
   return function (label) {
     return SpreadsheetApp.getActive().getSheetByName(process.uiLabel+" "+label) 
     || writeObjectsOnSheet (SpreadsheetApp.getActive().insertSheet(process.uiLabel+" "+label))
-    (process.template) ()
+    (process.params) ()
   }
 }
 
@@ -51,7 +51,8 @@ function _binaryFilterArray(filter) {
   return function (array) {
     return array.reduce(
       (acc,e) => {
-        acc[filter(e) ? 'yes' : 'no'] = acc[filter(e) ? 'yes' : 'no'].concat({...e})
+        const filterres = filter(e);
+        acc[filterres ? 'yes' : 'no'] = acc[filterres ? 'yes' : 'no'].concat({...e})
         return acc 
       },{yes:[],no:[]}
     )

@@ -65,6 +65,11 @@ function CHARGEBEE_API() {
           return  function (object) {
             return  function (action) {
               try{
+
+                for (let [key, value] of Object.entries(object)) {
+                  if (value == '' || value == "REQUIRED") delete object[key];
+                }
+                
                 const objcp = {...object};
                 const urlencoded = toUrlEncoded("?", objcp);
 
@@ -101,6 +106,10 @@ function CHARGEBEE_API() {
             return  function (action) {
               try{
 
+                for (let [key, value] of Object.entries(object)) {
+                  if (value == '' || value == "REQUIRED") delete object[key];
+                }
+
                 const objcp = {...object};
                 const urlencoded = toUrlEncoded("?", objcp);
 
@@ -136,7 +145,7 @@ function toUrlEncoded(old, objs) {
   if (Object.keys(objs).length <= 0) 
     return old.slice(0, old.length-1);
 
-  if (Object.keys(objs)[0].includes("[")) 
+  if (Object.keys(objs)[0].includes("[") && objs[Object.keys(objs)[0]] != '' && objs[Object.keys(objs)[0]] != 'REQUIRED') 
     old = old.concat(Object.keys(objs)[0] + '=' + objs[Object.keys(objs)[0]] + '&');
   
 

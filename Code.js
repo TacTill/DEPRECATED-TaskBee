@@ -5,8 +5,12 @@ function onOpen() {
   .addToUi();
 }
 
+function onInstall() {
+  onOpen();
+}
+
 function showSidebar() {
-  try {CHARGEBEE_API().TEST_AUTH(); switchpage(2)}
+  try {if (!CHARGEBEE_API().TEST_AUTH()) {SpreadsheetApp.getUi().alert('your credentials seems invalids'); return switchpage(1);} return switchpage(2);}
   catch (error) {switchpage(1);}
 }
 
@@ -30,6 +34,12 @@ function isPOST(D, A) {
   return false;
 }
 
+function openinputs(data, action) {
+  console.log("hello");
+  const inps = _getProcessSheet(RUNTREE(EN_txt)[data].process[action])("INPUT");
+  console.log("aurvoir", inps);
+}
+
 function sendReq(selectedData, selectedAction, filters, auth) {
 
   switchpage(3);
@@ -41,12 +51,23 @@ function sendReq(selectedData, selectedAction, filters, auth) {
   }
   else 
   {
+    // const query = createQuery(selectedData, selectedAction, filters);
     const credentials = {subdomain: CHARGEBEE_API().AUTH().api_endpoint, token: CHARGEBEE_API().AUTH().api_user};
     const resultget = getObjectsFromChargebee(selectedData)(credentials)();
-    writeObjectsOnSheet(SpreadsheetApp.getActive().getSheetByName('SYS_auth')) ([resultget]) ();
+    // writeObjectsOnSheet(SpreadsheetApp.getActive().getSheetByName('SYS_auth')) ([resultget]) ();
 
     console.log(resultget);
   }
+}
+
+function createQuery(data, action, filters) {
+   return {
+      lastQuery: false,
+      concatenateResults: false,
+      endpoint: data,
+      attributes: _getSelectedAttributes(),
+      filters: _getSelectedFilters()
+    };
 }
 
 function isRequestWithCredentialsWorking(credentialsToTest) {
