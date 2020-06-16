@@ -85,6 +85,7 @@ function CHARGEBEE_API() {
                 do{
                   var  response = JSON.parse(UrlFetchApp.fetch(url, header).getContentText())
                   console.log("response", response);
+                  SHEET_LOG ({type:'info',origin:'POST_NO_TARGET', body: "response of call : " + JSON.stringify(response)}) (response)
                   delete object[response.param || null]
                 }while(!response[object.object] && 
                        (response.error_code === "param_should_not_be_sent" || response.error_code === "param_should_not_be_blank") );
@@ -120,7 +121,8 @@ function CHARGEBEE_API() {
                 /* If an object attribute can't be updated, Chargebee throw an error. We delete the faulty attribute then try to repost the object */
                 do{
                   var  response = JSON.parse(UrlFetchApp.fetch(url, header).getContentText())
-                  console.log(response);
+                  console.log("response", response);
+                  SHEET_LOG ({type:'info',origin:'POST_NO_TARGET', body: "response of call : " + JSON.stringify(response)}) (response)
                   delete object[response.param || null]
                 }while(!response[object.object] && 
                        (response.error_code === "param_should_not_be_sent" || response.error_code === "param_should_not_be_blank") );

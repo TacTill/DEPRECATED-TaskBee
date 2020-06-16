@@ -11,7 +11,7 @@
 function reduceArrayToObjectFromObjectKeys(values){
   return function (keys) {
     return keys.reduce(function (acc,key,index) {
-      acc[key] =  toJSON(values[index]) || values[index]
+      acc[key] =  toJSON(values[index]) || values[index].trim().split("\n").join("").split("\r").join("").split("\r\n").join("");
       return acc
     },{})
   }
@@ -22,7 +22,7 @@ function reduceArrayToObjectFromObjectKeys(values){
 * @return {[Object]}     A list of objects read from given Sheet 
 **/
 function readObjectsFromRange(range){
-  const values = range.getValues()
+  const values = range.getValues();
   // First row contains object keys
   const keys   = values[0]
   // Proper object values start at line number 2

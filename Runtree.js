@@ -166,16 +166,16 @@ function RUNTREE(int) {
                     ADDON_id: '', ADDON_quantity: '', CHARGE_amount: '', CHARGE_description: ''}], 
                     validate : {
                         input   : (e) => e.CUSTOMER_id,
-                        distant : (e) => e,
+                        distant : (e) => true,
                         output  : (e) => true,
                     },          
                     funct  : (process) => (elem) => {
 
                         const cbCustomer = {customer_id: elem.CUSTOMER_id, object: 'invoices'}
-                        sai = elem.ADDON_id ? elem.ADDON_id.split(';'): '';
-                        saq = elem.ADDON_quantity ? elem.ADDON_quantity.split(';'): '';
-                        sca = elem.CHARGE_amount ? elem.CHARGE_amount.split(';'): '';
-                        scd = elem.CHARGE_description ? elem.CHARGE_description.split(';'): '';
+                        const sai = elem.ADDON_id.toString() ? elem.ADDON_id.toString().split(';'): '';
+                        const saq = elem.ADDON_quantity.toString() ? elem.ADDON_quantity.toString().split(';'): '';
+                        const sca = elem.CHARGE_amount.toString() ? elem.CHARGE_amount.toString().split(';'): '';
+                        const scd = elem.CHARGE_description.toString() ? elem.CHARGE_description.toString().split(';'): '';
                         for (var i = 0; i < sai.length && i < saq.length; i++) {
                             cbCustomer['addons[id]['+i+']'] = sai[i];
                             cbCustomer['addons[quantity]['+i+']'] = saq[i];
@@ -187,14 +187,14 @@ function RUNTREE(int) {
 
                         return cbCustomer 
                         ? CHARGEBEE_API().POST_NO_TARGET()(cbCustomer)() 
-                        : {id: elem.CUSTOMER_id, log:'Invalid for invoice creation'} 
+                        : {id: elem.CUSTOMER_id, step:'runtree', log:'Invalid for invoice creation'} 
                     },
                 },
 
                 record_payment: {
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_payment),
                     uiLabel: int('record_payment'),
-                    params : [{INVOICE_id: 'REQUIRED', TRANSACTION_amount : '', TRANSACTION_payment_method: ''}],
+                    params : [{INVOICE_id: 'REQUIRED', TRANSACTION_amount : '', TRANSACTION_payment_method: 'REQUIRED'}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e,
@@ -211,25 +211,25 @@ function RUNTREE(int) {
                     },
                 },
 
-                record_refund: {
-                    RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_refund),
-                    uiLabel: int('record_refund'),
-                    params : [{INVOICE_id: 'REQUIRED', TRANSACTION_amount: '', TRANSACTION_payment_method: ''}],
-                    validate : {
-                        input   : (e) => e.INVOICE_id,
-                        distant : (e) => e,
-                        output  : (e) => true,
-                    },
-                    funct  : (process) => (elem) => {
-                        const cbInvoice = {id: INVOICE_id, object: 'invoice', 
-                        'transaction[amount]' : elem.TRANSACTION_amount, 'transaction[payment_method]' : elem.TRANSACTION_payment_method}
+                // record_refund: { // transaction[date] : cannot be blank
+                //     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.record_refund),
+                //     uiLabel: int('record_refund'),
+                //     params : [{INVOICE_id: 'REQUIRED', TRANSACTION_amount: '', TRANSACTION_payment_method: ''}],
+                //     validate : {
+                //         input   : (e) => e.INVOICE_id,
+                //         distant : (e) => e,
+                //         output  : (e) => true,
+                //     },
+                //     funct  : (process) => (elem) => {
+                //         const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', 
+                //         'transaction[amount]' : elem.TRANSACTION_amount, 'transaction[payment_method]' : elem.TRANSACTION_payment_method}
 
-                        return cbInvoice 
-                        && cbInvoice.id.length > 0 
-                        ? CHARGEBEE_API().POST()(cbInvoice)('record_refund') 
-                        : {id: elem.INVOICE_id, log:'Invalid for invoice refund record'} 
-                    },
-                },
+                //         return cbInvoice 
+                //         && cbInvoice.id.length > 0 
+                //         ? CHARGEBEE_API().POST()(cbInvoice)('record_refund') 
+                //         : {id: elem.INVOICE_id, log:'Invalid for invoice refund record'} 
+                //     },
+                // },
 
                 update_details: { 
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.update_details),
@@ -249,7 +249,7 @@ function RUNTREE(int) {
                         output  : (e) => true,
                     },
                     funct  : (process) => (elem) => {
-                        const cbInvoice = {id: INVOICE_id, object: 'invoice', comment: elem.COMMENT, 
+                        const cbInvoice = {id: elem.INVOICE_id, object: 'invoice', comment: elem.COMMENT, 
                         'billing_address[first_name]' : elem.BILLING_ADDRESS_first_name ,
                         'billing_address[last_name]'  : elem.BILLING_ADDRESS_last_name ,
                         'billing_address[email]'      : elem.BILLING_ADDRESS_email ,
@@ -320,7 +320,7 @@ function RUNTREE(int) {
                 apply_credits: { 
                     RUN    : () => RUNTIME(RUNTREE(int).invoice.process.apply_credits),
                     uiLabel: int('invoice_apply_credits'),
-                    params : [{INVOICE_id: '', COMMENT: '', CREDIT_note_id: ''}],
+                    params : [{INVOICE_id: 'REQUIRED', COMMENT: '', CREDIT_note_id: ''}],
                     validate : {
                         input   : (e) => e.INVOICE_id,
                         distant : (e) => e,
@@ -548,17 +548,17 @@ function RUNTREE(int) {
                         'subscription[cf_mainsubscription]'                    : elem['SUBSCRIPTION[cf_mainsubscription]'],
                         'subscription[cf_extradevicessubscription]'            : elem['SUBSCRIPTION[cf_extradevicessubscription]'],
                         
-                        'customer[id]'                     : elem['CUSTOMER[id]'],
-                        'customer[email]'                  : elem['CUSTOMER[email]'],
-                        'customer[first_name]'             : elem['CUSTOMER[first_name]'],
-                        'customer[last_name]'              : elem['CUSTOMER[last_name]'],
-                        'customer[company]'                : elem['CUSTOMER[company]'],
-                        'customer[taxability]'             : elem['CUSTOMER[taxability]'],
-                        'customer[locale]'                 : elem['CUSTOMER[locale]'],
-                        'customer[phone]'                  : elem['CUSTOMER[phone]'],
-                        'customer[vat_number]'             : elem['CUSTOMER[vat_number]'],
-                        'customer[consolidated_invoicing]' : elem['CUSTOMER[consolidated_invoicing]'],
-                        'customer[cf_seasonal]'            : elem['CUSTOMER[cf_seasonal]'],
+                        'customer[id]'                     : elem['CUSTOMER[id]'].toString(),
+                        'customer[email]'                  : elem['CUSTOMER[email]'].toString(),
+                        'customer[first_name]'             : elem['CUSTOMER[first_name]'].toString(),
+                        'customer[last_name]'              : elem['CUSTOMER[last_name]'].toString(),
+                        'customer[company]'                : elem['CUSTOMER[company]'].toString(),
+                        'customer[taxability]'             : elem['CUSTOMER[taxability]'].toString(),
+                        'customer[locale]'                 : elem['CUSTOMER[locale]'].toString(),
+                        'customer[phone]'                  : elem['CUSTOMER[phone]'].toString(),
+                        'customer[vat_number]'             : elem['CUSTOMER[vat_number]'].toString(),
+                        'customer[consolidated_invoicing]' : elem['CUSTOMER[consolidated_invoicing]'].toString(),
+                        'customer[cf_seasonal]'            : elem['CUSTOMER[cf_seasonal]'].toString(),
                         
                         'card[gateway_account_id]' : elem['CARD[gateway_account_id]'],
                         
@@ -631,7 +631,7 @@ function RUNTREE(int) {
                     'ADDONS[unit_price][0]' : '',
                     'ADDONS[billing_cycles][0]' : ''}],
                     validate : {
-                        input   : (e) => e.CUSTOMER_id,
+                        input   : (e) => e['SUBSCRIPTION[id]'],
                         distant : (e) => true,
                         output  : (e) => true,
                     },
@@ -663,7 +663,7 @@ function RUNTREE(int) {
                             'addons[unit_price][0]'     : elem['ADDONS[unit_price][0]'],
                             'addons[billing_cycles][0]' : elem['ADDONS[billing_cycles][0]']}
                         return callObj 
-                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)('/checkout_existing').hosted_page.url
+                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)('/checkout_existing').hosted_page
                         : {id: elem.CUSTOMER_id, step:'filter', log:'Invalid for hosted_pages checkout_existing'} 
                     }
                 },
@@ -953,7 +953,7 @@ function RUNTREE(int) {
                     RUN      : () => RUNTIME(RUNTREE(int).subscription.process.add_charge_at_term_end),
                     uiLabel  : int('add_charge_at_term_end subscription'),
                     params   : [{SUBSCRIPTION_id: 'REQUIRED', AMOUNT: 'REQUIRED',
-                    DESCRIPTION: Session.getActiveUser().getEmail() + 'add_charge_at_term_end'}],
+                    DESCRIPTION: Session.getActiveUser().getEmail() + ' add_charge_at_term_end'}],
                     validate : {
                         input   : (e) => e.SUBSCRIPTION_id,
                         distant : (e) => true,
@@ -961,7 +961,7 @@ function RUNTREE(int) {
                     },
                     funct  : (process) => (elem) => {
                         const callObj = {object: 'subscription', id: elem.SUBSCRIPTION_id,
-                        amount: elem.AMOUNT, description: elem.DESCRIPTION}
+                        amount: (elem.AMOUNT*100).toString(), description: elem.DESCRIPTION}
                         return callObj 
                         ? CHARGEBEE_API().POST()(callObj)("add_charge_at_term_end")
                         : {id: elem.SUBSCRIPTION_id, step:'filter', log:'Invalid for subscription add_charge_at_term_end'} 
@@ -980,7 +980,7 @@ function RUNTREE(int) {
                     },
                     funct  : (process) => (elem) => {
                         const callObj = {object: 'subscription', id: elem.SUBSCRIPTION_id,
-                        addon_id: elem.ADDON_id, addon_quantity: elem.ADDON_quantity, addon_unit_price: elem.ADDON_unit_price}
+                        addon_id: elem.ADDON_id, addon_quantity: elem.ADDON_quantity.toString(), addon_unit_price: elem.ADDON_unit_price}
                         return callObj 
                         ? CHARGEBEE_API().POST()(callObj)("charge_addon_at_term_end")
                         : {id: elem.SUBSCRIPTION_id, step:'filter', log:'Invalid for subscription charge_addon_at_term_end'} 
@@ -1355,7 +1355,7 @@ function RUNTREE(int) {
                         'addons[unit_price][0]'     : elem['ADDONS[unit_price][0]'],
                         'addons[service_period][0]' : elem['ADDONS[service_period][0]'],
 
-                        'charges[amount][0]'                   : elem['CHARGES[amount][0]'],
+                        'charges[amount][0]'                   : (elem['CHARGES[amount][0]']*100).toString(),
                         'charges[description][0]'              : elem['CHARGES[description][0]'],
                         'charges[avalara_sale_type][0]'        : elem['CHARGES[avalara_sale_type][0]'],
                         'charges[avalara_transaction_type][0]' : elem['CHARGES[avalara_transaction_type][0]'],
@@ -1395,7 +1395,7 @@ function RUNTREE(int) {
                 update_status : { 
                     RUN      : () => RUNTIME(RUNTREE(int).quotes.process.update_status),
                     uiLabel  : int('update_status quotes'),
-                    params   : [{QUOTE_id: 'REQUIRED', STATUS: '', COMMENT: ''}],
+                    params   : [{QUOTE_id: 'REQUIRED', STATUS: 'REQUIRED', COMMENT: ''}],
                     validate : {
                         input   : (e) => e.QUOTE_id,
                         distant : (e) => true,
