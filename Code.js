@@ -14,6 +14,12 @@ function onInstall() {
 
 // opens the sidebar with TaskBee in it
 function showSidebar() {
+  if (!SpreadsheetApp.getActive().getSheetByName('SYS_auth'))
+  {
+    switchpage(6);
+    writeObjectsOnSheet (SpreadsheetApp.getActive().insertSheet('SYS_auth')) ([_BASIC_AUTH('CHARGEBE')]) ()  
+  }
+  else
   try {if (!CHARGEBEE_API().TEST_AUTH()) {SpreadsheetApp.getUi().alert('your credentials seems invalids'); return switchpage(1);} return switchpage(2);}
   catch (error) {console.error(error); switchpage(1);}
 }
@@ -96,6 +102,7 @@ function switchpage(newone) {
   newone == 3 ? "loadingScreen" : 
   newone == 4 ? "result" : 
   newone == 5 ? "err" : 
+  newone == 6 ? "obd" : 
   "auth";
 
   var html = HtmlService.createHtmlOutputFromFile(name)

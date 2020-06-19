@@ -29,11 +29,11 @@
         }
         #APISelector
         {
-            font-size: 1em;
+            font-size: 1.5em;
         }
         p
         {
-            font-size: 2em;
+            font-size: 2.5em;
             text-align: left;
             margin-block-end: 0;
             margin-bottom: 0 !important;
@@ -41,7 +41,7 @@
 
         /*BURGER*/
 
-        body{margin: 0;padding: 0;background: #232323;color: #cdcdcd;font-family: "Avenir Next", "Avenir", sans-serif}#menuToggle{display: block;position: relative;top: 3.5vh;left: 3vh;z-index: 1;-webkit-user-select: none;user-select: none}#menuToggle a{text-decoration: none;color: #232323;transition: color 0.3s ease}#menuToggle a:hover{color: tomato}#menuToggle input{display: block;width: 13vw;height: 5vh;position: absolute;top: -1vh;left: -1vw;cursor: pointer;opacity: 0;z-index: 2;-webkit-touch-callout: none}#menuToggle span{display: block;width: 10vw;height: 0.5vh;margin-bottom: 1vh;position: relative;background: #ffffff;border-radius: 3px;z-index: 1;transform-origin: 4px 0px;transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),opacity 0.55s ease}#menuToggle span:first-child{transform-origin: 0% 0%}#menuToggle span:nth-last-child(2){transform-origin: 0% 100%}#menuToggle input:checked ~ span{opacity: 1;transform: rotate(45deg);background: #232323}#menuToggle input:checked ~ span:nth-last-child(3){opacity: 0;transform: rotate(0deg) scale(0.2, 0.2)}#menuToggle input:checked ~ span:nth-last-child(2){transform: rotate(-45deg) }#menu{position: absolute;width: 300px;margin: -100px 0 0 -3vh;padding: 3vh;padding-top: 125px;background: #ededed;list-style-type: none;-webkit-font-smoothing: antialiased;transform-origin: 0% 0%;transform: translate(-100%, 0);transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0)}#menu li{padding: 10px 0;font-size: 22px}#menuToggle input:checked ~ ul{transform: none}
+        body{margin: 0;padding: 0;background: #232323;color: #cdcdcd;font-family: "Avenir Next", "Avenir", sans-serif}#menuToggle{display: block;position: relative;top: 3.5vh;left: 3vh;z-index: 1;-webkit-user-select: none;user-select: none}#menuToggle a{text-decoration: none;color: #232323;transition: color 0.3s ease}#menuToggle a:hover{color: tomato}#menuToggle input{display: block;width: 13vw;height: 5vh;position: absolute;top: -1vh;left: -1vw;cursor: pointer;opacity: 0;z-index: 2;-webkit-touch-callout: none}#menuToggle span{display: block;width: 10vw;height: 0.5vh;margin-bottom: 1vh;position: relative;background: #ffffff;border-radius: 3px;z-index: 1;transform-origin: 4px 0px;transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),opacity 0.55s ease}#menuToggle span:first-child{transform-origin: 0% 0%}#menuToggle span:nth-last-child(2){transform-origin: 0% 100%}#menuToggle input:checked ~ span{opacity: 1;transform: rotate(45deg);background: #232323}#menuToggle input:checked ~ span:nth-last-child(3){opacity: 0;transform: rotate(0deg) scale(0.2, 0.2)}#menuToggle input:checked ~ span:nth-last-child(2){transform: rotate(-45deg) }#menu{position: absolute;width: 250px;margin: -100px 0 0 -3vh;padding: 3vh;padding-top: 125px;background: #ededed;list-style-type: none;-webkit-font-smoothing: antialiased;transform-origin: 0% 0%;transform: translate(-100%, 0);transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0)}#menu li{padding: 10px 0;font-size: 22px}#menuToggle input:checked ~ ul{transform: none}
 
         /*BURGER*/
 
@@ -64,6 +64,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <!-- MDB core JavaScript -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
+
     <!-- bootstrap -->
     <meta charset="utf-8">
 
@@ -86,9 +87,18 @@
                     <br>
                     <p id="APISelector"></p>
                     <br>
-                    <a href="https://github.com/TacTill/TaskBee/issues" target="_blank"><li>FAQ</li></a>
-                    <a href="https://github.com/TacTill/TaskBee" target="_blank"><li>Give feedbacks</li></a>
-                    <a href="https://github.com/TacTill/TaskBee/issues/new" target="_blank"><li>Report an issue</li></a>
+                    <br>
+                    <a href="https://github.com/TacTill/TaskBee/issues" target="_blank">
+                        <li><i class="fas fa-question-circle"></i>&nbsp;&nbsp;&nbsp;FAQ</li></a>
+                    <a href="https://github.com/TacTill/TaskBee" target="_blank">
+                        <li><i class="fas fa-share-alt"></i>&nbsp;&nbsp;&nbsp;Give feedbacks</li></a>
+                    <a href="https://github.com/TacTill/TaskBee/issues/new" target="_blank">
+                        <li><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;Report an issue</li></a>
+                    <br>
+                    <br>
+                    <a onclick="google.script.run.switchpage(6)">
+                        <li><i class="fas fa-info-circle"></i>&nbsp;&nbsp;&nbsp;Onboarding</li>
+                    </a>
                 </ul>
             </div>
         </nav>
@@ -103,12 +113,13 @@
 
         <div id="middle">
             <div class="input-group mb-3" style="padding: 8vw;">
-                <div class="input-group-prepend">
-                    <label class="input-group-text" for="mainSelector" id="mainSelectorLabel">Data</label>
-                </div>
-                <select class="custom-select" id="mainSelector">
-                </select>
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="mainSelector" id="mainSelectorLabel">Data</label>
             </div>
+            <select class="custom-select" id="mainSelector" placeholder="search...">
+
+            </select>
+        </div>
 
             <div id="filters">
                 <form id="filtersform" style="padding-left: 10px;">
@@ -119,9 +130,9 @@
 
         </div>
         <div id="bottom">
-            <button type="button" class="btn btn-primary" onclick="startActions();" id="confbtn" disabled>Confirm</button>
+            <button style="border-radius: 50px; background-color: #6C69FF !important;" type="button" class="btn btn-primary" onclick="startActions();" id="confbtn" disabled>Confirm</button>
         </div>
-        <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.switchpage(2)">< back</button>
+        <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.showSidebar()">< back</button>
     </div>
 </body>
 <script>
@@ -327,6 +338,7 @@
         var button2 = document.createElement("button");
         button2.innerHTML = "Input";
         button2.className = "btn btn-outline-primary waves-effect";
+        button2.style.borderRadius = "50px";
         button2.disabled = true;
         button2.id = 'inpbtn';
         button2.onclick = function(){popinputs();}
@@ -335,6 +347,8 @@
         var button = document.createElement("button");
         button.innerHTML = "Confirm";
         button.className = "btn btn-primary";
+        button.style.borderRadius = "50px";
+        button.style.backgroundColor = "#605ed9 !important";
         button.disabled = true;
         button.id = 'confbtn';
         button.onclick = function(){send();}
@@ -361,6 +375,43 @@
         .withSuccessHandler(generateOptions)
         .getOptionsFromBack("auths", "APISelector")
     }
+
+
+    function adminswitchpage(n)
+    {
+        google.script.run.switchpage(n);
+    }
+
+
+    $(document).ready(function() {
+// SideNav Button Initialization
+$(".button-collapse").sideNav2();
+// SideNav Scrollbar Initialization
+var sideNavScrollbar = document.querySelector('.custom-scrollbar');
+var ps = new PerfectScrollbar(sideNavScrollbar);
+});
+
+$(document).ready(function() {
+// SideNav Default Options
+$('.button-collapse').sideNav({
+edge: 'left', // Choose the horizontal origin
+closeOnClick: false, // Closes side-nav on &lt;a&gt; clicks, useful for Angular/Meteor
+breakpoint: 1440, // Breakpoint for button collapse
+menuWidth: 240, // Width for sidenav
+timeDurationOpen: 500, // Time duration open menu
+timeDurationClose: 500, // Time duration open menu
+timeDurationOverlayOpen: 200, // Time duration open overlay
+timeDurationOverlayClose: 200, // Time duration close overlay
+easingOpen: 'easeInOutQuad', // Open animation
+easingClose: 'easeInOutQuad', // Close animation
+showOverlay: true, // Display overflay
+showCloseButton: false // Append close button into siednav
+slim: false, // turn on slime mode
+onOpen: null, // callback function
+onClose: null, // callback function
+mode: over // change sidenav mode
+});
+});
 
 </script>
 </html>

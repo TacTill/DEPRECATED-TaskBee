@@ -6,7 +6,7 @@
         .parent 
         {
             display: grid;
-            grid-template-rows: 9vh 30vh 40vh 15vh;
+            grid-template-rows: 10vh 35vh 45vh 10vh;
         }
         .textholder
         {
@@ -15,7 +15,7 @@
         }
         #hello_user
         {
-            margin-top: 10vh;
+            margin-top: 5vh;
             margin-left: 15vw;
             color: #2D2ACD;
         }
@@ -39,25 +39,31 @@
         }
         p
         {
-            font-size: 2em;
+            margin-block-start: 0;
+            margin-block-end: 0;
+            font-size: 1.5em;
             text-align: left;
         }
     </style>
     <!-- bootstrap -->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-
-    <!-- bootstrap -->
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet">
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
+        <!-- bootstrap -->
 
     <meta charset="utf-8">
 </head>
@@ -69,7 +75,7 @@
         </nav>
 
         <div id="top">
-            <p id="hello_user">Hello<br></p>
+            <p id="hello_user">Hello,<br></p>
             <p id="actualUser"></p>
             <br>
         </div>
@@ -77,25 +83,25 @@
 
         <div id="middle">
             <div style="display:table">
-                <div id="statement" style="padding-left: 50px; opacity: 0.75; display:table-cell">
-                    Please, enter your<br>ChargeBee informations&nbsp; 
+                <div id="statement" style="font-size: 0.8em; padding-left: 50px; opacity: 0.75; display:table-cell">
+                    Please, enter your<br>Chargebee informations. &nbsp; 
                     <a href="https://apidocs.chargebee.com/docs/api#api_authentication" target="_blank">
-                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-                    <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                    <i style="color: black" class="fas fa-question-circle"></i>
                     </a>
                 </div>
             </div>
-            <br>
-            <label for="subdomain" style="margin-left: 18vw;">Subdomain</label>
-            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="subdomain" placeholder="taskbee.chargebee.com/api/v2/">
-            <br>
-            <label for="token" style="margin-left: 18vw;">Token</label>
-            <input type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="token" placeholder="test_t45k833t45k833t45k833t45k833t45k833">
-
+            <div class="md-form md-outline" style="margin-top: 3vh;">
+                <input style="font-size: 0.8em; padding: 8px;" type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="subdomain" placeholder="taskbee">
+                <label for="subdomain" style="margin-left: 18vw;">Subdomain</label>
+            </div>
+            <div class="md-form md-outline" style="margin-top: 3vh;">
+                <input style="font-size: 0.8em; padding: 8px;" type="text" onchange="buttonAb()" class="form-control form-control-lg" value="" id="token" placeholder="test_t45k833t45k833t45k833t45k833t45k833">
+                <label for="token" style="margin-left: 18vw;">Token</label>
+            </div>
         </div>
 
         <div id="bottom">
-            <button type="button" style="background-image: none; border-color: #6C69FF; margin: auto;" id="validatebtn" class="btn btn-primary" onclick="validAuth()" disabled>Confirm</button>
+            <button type="button" style="background-image: none; background-color: #6C69FF !important; margin: auto; border-radius: 50px;" id="validatebtn" class="btn btn-primary" onclick="validAuth()" disabled>Confirm</button>
         </div>
     </div>
 </body>

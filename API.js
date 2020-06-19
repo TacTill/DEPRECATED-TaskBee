@@ -34,7 +34,7 @@ function CHARGEBEE_API() {
                    },null) 
                    : null )
               : null
-              const url   = 'https://' + credentials.api_endpoint+object+'s?' + params || ''
+              const url   = 'https://' + credentials.api_endpoint+".chargebee.com/api/v2/"+object+'s?' + params || ''
 
               do {
                 let header   =  _getChargebeeHeader('GET')(credentials)(null)(muteHttpExceptions)
@@ -76,7 +76,7 @@ function CHARGEBEE_API() {
                 /* Check if the object already exists in Chargebee */
                 const exists = CHARGEBEE_API().GET(credential) (object.object) ("?id[is]="+object.id) () [0]
                 /* if it does, we access the object before writing it */
-                const url    = 'https://'+credential.api_endpoint+object.object+'s'
+                const url    = 'https://'+credential.api_endpoint+".chargebee.com/api/v2/"+object.object+'s'
                 + (exists ? "/"+object.id+"/"+( action || "") : "")+(urlencoded||"");
                 console.log("url", url);
                 console.log("object", object);
@@ -114,7 +114,7 @@ function CHARGEBEE_API() {
                 const objcp = {...object};
                 const urlencoded = toUrlEncoded("?", objcp);
 
-                const url    = 'https://'+credential.api_endpoint+object.object+(action||"")+(urlencoded||"");
+                const url    = 'https://'+credential.api_endpoint+".chargebee.com/api/v2/"+object.object+(action||"")+(urlencoded||"");
                 console.log("url", url);
                 console.log("object", object);
                 const header = _getChargebeeHeader("POST") (credential) (object) ()
