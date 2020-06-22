@@ -48,22 +48,22 @@
     </style>
 
     <!-- bootstrap -->
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-<!-- Google Fonts -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
-<!-- Bootstrap core CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-<!-- Material Design Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet">
-<!-- JQuery -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- Bootstrap tooltips -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
-<!-- Bootstrap core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<!-- MDB core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/css/mdb.min.css" rel="stylesheet">
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.0/js/mdb.min.js"></script>
 
     <!-- bootstrap -->
     <meta charset="utf-8">
@@ -72,6 +72,7 @@
 <body onload="on_load();">
 
 
+<script>console.log("bodyload");</script>
 
     <div id="page1" class="parent">
 
@@ -89,37 +90,34 @@
                     <br>
                     <br>
                     <a href="https://github.com/TacTill/TaskBee/issues" target="_blank">
-                        <li><i class="fas fa-question-circle"></i>&nbsp;&nbsp;&nbsp;FAQ</li></a>
+                        <li><i class="fas fa-question-circle"></i>&nbsp;&nbsp;&nbsp;FAQ</li>
+                    </a>
                     <a href="https://github.com/TacTill/TaskBee" target="_blank">
-                        <li><i class="fas fa-share-alt"></i>&nbsp;&nbsp;&nbsp;Give feedbacks</li></a>
+                        <li><i class="fas fa-share-alt"></i>&nbsp;&nbsp;&nbsp;Give feedbacks</li>
+                    </a>
                     <a href="https://github.com/TacTill/TaskBee/issues/new" target="_blank">
-                        <li><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;Report an issue</li></a>
-                    <br>
-                    <br>
-                    <a onclick="google.script.run.switchpage(6)">
-                        <li><i class="fas fa-info-circle"></i>&nbsp;&nbsp;&nbsp;Onboarding</li>
+                        <li><i class="fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;Report an issue</li>
                     </a>
                 </ul>
             </div>
         </nav>
         <!-- burger -->
-
         <div id="top">
             <a href="https://apidocs.chargebee.com/docs/api" target="_blank">
-            <p id="hello_user">Choose a data</p>
-            <p id="actualUser"></p>
+                <p id="hello_user">Choose a data</p>
+                <p id="actualUser"></p>
             </a>
         </div>
 
         <div id="middle">
             <div class="input-group mb-3" style="padding: 8vw;">
-              <div class="input-group-prepend">
-                <label class="input-group-text" for="mainSelector" id="mainSelectorLabel">Data</label>
-            </div>
-            <select class="custom-select" id="mainSelector" placeholder="search...">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="mainSelector" id="mainSelectorLabel">Data</label>
+                </div>
+                <select class="custom-select" id="mainSelector" placeholder="search...">
 
-            </select>
-        </div>
+                </select>
+            </div>
 
             <div id="filters">
                 <form id="filtersform" style="padding-left: 10px;">
@@ -134,9 +132,10 @@
         </div>
         <button type="button" class="btn secondary" style="opacity: 0.5" onclick="google.script.run.showSidebar()">< back</button>
     </div>
+
 </body>
 <script>
-
+console.log("body done");
     var selectedData;
     var selectedAction;
     var selectedAuth;
@@ -183,7 +182,7 @@
             document.getElementById('filter'+i+'val').id = 'filter'+ (i-1) +'val'
             document.getElementById('filter'+i+'valinput').id = 'filter'+ (i-1) +'valinput'
             document.getElementById('filter'+i+'rem').id = 'filter'+ (i-1) +'rem'
-            document.getElementById('filter'+i+'rembtn').id = 'filter'+ (i-1) +'rembtn'
+            document.   getElementById('filter'+i+'rembtn').id = 'filter'+ (i-1) +'rembtn'
         }
     }
 
@@ -362,7 +361,7 @@
     }
 
     function popinputs() {
-          google.script.run
+        google.script.run
         .openinputs(selectedData, selectedAction);
     }
 
@@ -381,37 +380,6 @@
     {
         google.script.run.switchpage(n);
     }
-
-
-    $(document).ready(function() {
-// SideNav Button Initialization
-$(".button-collapse").sideNav2();
-// SideNav Scrollbar Initialization
-var sideNavScrollbar = document.querySelector('.custom-scrollbar');
-var ps = new PerfectScrollbar(sideNavScrollbar);
-});
-
-$(document).ready(function() {
-// SideNav Default Options
-$('.button-collapse').sideNav({
-edge: 'left', // Choose the horizontal origin
-closeOnClick: false, // Closes side-nav on &lt;a&gt; clicks, useful for Angular/Meteor
-breakpoint: 1440, // Breakpoint for button collapse
-menuWidth: 240, // Width for sidenav
-timeDurationOpen: 500, // Time duration open menu
-timeDurationClose: 500, // Time duration open menu
-timeDurationOverlayOpen: 200, // Time duration open overlay
-timeDurationOverlayClose: 200, // Time duration close overlay
-easingOpen: 'easeInOutQuad', // Open animation
-easingClose: 'easeInOutQuad', // Close animation
-showOverlay: true, // Display overflay
-showCloseButton: false // Append close button into siednav
-slim: false, // turn on slime mode
-onOpen: null, // callback function
-onClose: null, // callback function
-mode: over // change sidenav mode
-});
-});
 
 </script>
 </html>
