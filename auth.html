@@ -44,6 +44,14 @@
             font-size: 1.5em;
             text-align: left;
         }
+        input[type=text]:focus:not([readonly]) + label {
+            color: #6c69ff; 
+        }
+
+        input[type=text]:focus:not([readonly]) {
+            border-bottom: 1px solid #6c69ff;
+            box-shadow: 0 1px 0 0 green; 
+        }
     </style>
     <!-- bootstrap -->
 

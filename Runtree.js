@@ -1127,6 +1127,123 @@ function RUNTREE(int) {
                 }
             }
         },
+        addon: { 
+            uiLabel: int('addon'),
+            process : {
+
+                create : { 
+                    RUN      : () => RUNTIME(RUNTREE(int).addon.process.create),
+                    uiLabel  : int('create addon'),
+                    params   : [{ADDON_id: 'required', ADDON_name: 'required', Charge_type: 'required',
+                    DESCRIPTION: '', PRICE: '', PERIOD: 'required', PERIOD_unit: 'required', PRICING_model: 'required', UNIT: '', ENABLED_in_portal: '', INVOICE_notes: ''}],
+                    validate : {
+                        input   : (e) => e.ADDON_id && e.ADDON_name && e.Charge_type,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {
+                            object            : 'addons',
+                            id                : elem.ADDON_id,
+                            name              : elem.ADDON_name,
+                            charge_type       : elem.Charge_type,
+                            description       : elem.DESCRIPTION,
+                            price             : elem.PRICE.toString(),
+                            period            : elem.PERIOD.toString(),
+                            period_unit       : elem.PERIOD_unit,
+                            pricing_model     : elem.PRICING_model,
+                            unit              : elem.UNIT,
+                            enabled_in_portal : elem.ENABLED_in_portal,
+                            invoice_notes     : elem.INVOICE_notes,
+                        }
+                        return callObj 
+                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)()
+                        : {id: elem.pdf_url, step:'filter', log:'Invalid for addon create'} 
+                    }
+                },
+
+                update : { 
+                    RUN      : () => RUNTIME(RUNTREE(int).addon.process.update),
+                    uiLabel  : int('update addon'),
+                    params   : [{
+                        ADDON_id: 'required',
+                        NAME: '', 
+                        INVOICE_name: '', 
+                        DESCRIPTION: '', 
+                        CHARGE_type: '', 
+                        PRICE: '', 
+                        CURRENCY_code: '', 
+                        PERIOD: '', 
+                        PERIOD_unit: '', 
+                        PRICING_model: '', 
+                        UNIT: '', 
+                        TAXABLE: '', 
+                        PERIOD: '', 
+                    }],
+                    validate : {
+                        input   : (e) => e.ADDON_id,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {
+                            object        : 'addons/',
+                            name          : elem.NAME,
+                            invoice_name  : elem.INVOICE_name,
+                            description   : elem.DESCRIPTION,
+                            charge_type   : elem.CHARGE_type,
+                            price         : elem.PRICE.toString(),
+                            period        : elem.PERIOD.toString(),
+                            period_unit   : elem.PERIOD_unit,
+                            pricing_model : elem.PRICING_model,
+                            unit          : elem.UNIT,
+                            taxable       : elem.TAXABLE,
+                            period        : elem.PERIOD,
+                        }
+                        return callObj 
+                        ? CHARGEBEE_API().POST_NO_TARGET()(callObj)(elem.ADDON_id)
+                        : {id: elem.pdf_url, step:'filter', log:'Invalid for addon update'} 
+                    }
+                },
+
+                // list : {  
+                    // 
+                // autant passer par l'add-on de mathias (Chargebee Add-on), le runtime et le runtree ne sont pas du tout optimisé pour GET 
+                // et puis ca serait de l'over engineering, je vais d'abord focus sur les autres fonctionnalités, 
+                // je reviendrais peut etre sur list après si je trouve du temps
+                    // 
+                //     RUN      : () => RUNTIME(RUNTREE(int).addon.process.list),
+                //     uiLabel  : int('list addon'),
+                //     params   : [{OBJECT: 'addon'}],
+                //     validate : {
+                //         input   : (e) => e.OBJECT,
+                //         distant : (e) => true,
+                //         output  : (e) => true,
+                //     },
+                //     funct  : (process) => (elem) => {
+                //         let header   =  _getChargebeeHeader('GET')(CHARGEBEE_API().AUTH())(null)(true)
+                //         return UrlFetchApp.fetch("https://" + CHARGEBEE_API().AUTH().api_endpoint+".chargebee.com/api/v2/addons", header)
+                //     }
+                // },
+
+                delete : { 
+                    RUN      : () => RUNTIME(RUNTREE(int).addon.process.delete),
+                    uiLabel  : int('delete addon'),
+                    params   : [{ADDON_id: 'required'}],
+                    validate : {
+                        input   : (e) => e.ADDON_id,
+                        distant : (e) => true,
+                        output  : (e) => true,
+                    },
+                    funct  : (process) => (elem) => {
+                        const callObj = {id: elem.ADDON_id, object: 'addon'}
+                        return callObj 
+                        ? CHARGEBEE_API().POST()(callObj)("delete")
+                        : {id: elem.pdf_url, step:'filter', log:'Invalid for addon delete'} 
+                    }
+                },
+            }
+        },        
         quotes: { // https://apidocs.chargebee.com/docs/api/quotes
             uiLabel: int('quotes'),
             process : {
